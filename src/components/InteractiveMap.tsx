@@ -162,7 +162,8 @@ const InteractiveMap = ({ foodFlags, onFoodFlagClick }: InteractiveMapProps) => 
     // Add custom geolocation button
     const geoButton = L.control({
       position: 'bottomright'
-    });
+    }) as L.Control;
+    
     geoButton.onAdd = function() {
       const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
       div.innerHTML = `<a href="#" title="My location" role="button" aria-label="My location" class="bg-white hover:bg-gray-100 flex items-center justify-center w-[30px] h-[30px]">

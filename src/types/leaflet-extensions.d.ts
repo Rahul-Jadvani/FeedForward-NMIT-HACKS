@@ -11,20 +11,23 @@ declare global {
         }
       },
       Routing: {
-        control: (options: any) => any;
+        control(options: any): any;
+        Control: any;
       }
     }
   }
 }
 
+// Extend L namespace
 declare module "leaflet" {
   namespace Control {
     interface GeocoderOptions {
       geocoder?: any;
       defaultMarkGeocode?: boolean;
+      [key: string]: any;
     }
     
-    class Geocoder extends Control {
+    class Geocoder extends L.Control {
       constructor(options?: GeocoderOptions);
       on(type: string, fn: (e: any) => void): this;
       markGeocode(result: any): void;
