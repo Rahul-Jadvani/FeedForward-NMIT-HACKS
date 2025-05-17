@@ -1,6 +1,6 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { useAccount, useBalance, useReadContract, useWriteContract } from 'wagmi';
+import { useAccount, useBalance, useReadContract, useWriteContract, useConfig } from 'wagmi';
 import { formatEther, parseEther } from 'viem';
 import { toast } from "sonner";
 
@@ -142,6 +142,7 @@ const Web3Context = createContext<Web3ContextType | undefined>(undefined);
 
 export function Web3Provider({ children }: { children: ReactNode }) {
   const { address, isConnected } = useAccount();
+  const config = useConfig();
   const [isLoading, setIsLoading] = useState(false);
   const [ngoData, setNgoData] = useState<NGO | null>(null);
   const [ownedNFTs, setOwnedNFTs] = useState<NFT[]>([]);
