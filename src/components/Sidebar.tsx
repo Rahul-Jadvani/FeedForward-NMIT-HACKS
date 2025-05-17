@@ -27,7 +27,7 @@ export function Sidebar() {
 
   return (
     <div className={cn(
-      "h-[calc(100vh-4rem)] sticky top-16 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+      "h-[calc(100vh-4rem)] sticky top-16 border-r border-white/5 bg-black/50 backdrop-blur-xl",
       collapsed ? "w-16" : "w-[240px]",
       "transition-all duration-300"
     )}>
@@ -38,15 +38,15 @@ export function Sidebar() {
               key={item.to}
               to={item.to}
               className={({ isActive }) => cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
-                "hover:bg-accent hover:text-accent-foreground",
-                isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground",
+                "flex items-center gap-3 px-3 py-2 rounded-full transition-all duration-300",
+                "hover:bg-white/5 hover:text-ff-blue",
+                isActive ? "bg-ff-blue/10 text-ff-blue font-medium border border-ff-blue/20" : "text-white/70",
                 collapsed && "justify-center",
-                item.special && "text-white text-red-500 "
+                item.special && "text-red-500"
               )}
             >
               <item.icon size={20} />
-              {!collapsed && <span>{item.label}</span>}
+              {!collapsed && <span className="font-futuristic tracking-wide text-sm">{item.label}</span>}
             </NavLink>
           ))}
         </nav>
@@ -54,7 +54,7 @@ export function Sidebar() {
         <Button
           variant="ghost"
           size="icon"
-          className="self-end mt-4"
+          className="self-end mt-4 text-white/70 hover:text-ff-blue"
           onClick={() => setCollapsed(!collapsed)}
         >
           {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}

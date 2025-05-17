@@ -1,8 +1,14 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+}
+
+body {
+  background-color: #000000;
+  color: #fff;
 }
 
 .logo {
@@ -12,7 +18,7 @@
   transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em #99BDFF);
 }
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
@@ -39,4 +45,39 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* Pixel UI / Android 12 inspired elements */
+.pixel-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.pixel-ripple::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.7);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.pixel-ripple:focus:not(:active)::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(20);
+    opacity: 0;
+  }
 }
