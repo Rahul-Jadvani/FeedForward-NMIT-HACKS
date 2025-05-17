@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
@@ -43,12 +44,16 @@ import {
   Info,
   Utensils,
   Leaf,
-  AlertCircle
+  AlertCircle,
+  Coins,
+  AlertTriangle
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import LocationPicker from "@/components/LocationPicker";
+import { StakingForm } from "@/components/StakingForm";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Create a schema for food donation
 const donationFormSchema = z.object({
@@ -101,6 +106,9 @@ export default function DonatePage() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [images, setImages] = useState<File[]>([]);
+  const [hasStaked, setHasStaked] = useState(false);
+  const [stakedAmount, setStakedAmount] = useState(0);
+  const { isAuthenticated } = useAuth();
   
   // Initialize the form with default values
   const form = useForm<DonationFormValues>({
@@ -136,6 +144,15 @@ export default function DonatePage() {
   });
   
   const onSubmit = (values: DonationFormValues) => {
+    if (!hasStaked) {
+      toast({
+        title: "Staking Required",
+        description: "You must stake FeedCoin to submit this donation.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     console.log("Form values:", values);
     setIsSubmitting(true);
     
@@ -162,6 +179,16 @@ export default function DonatePage() {
   
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index));
+  };
+  
+  const handleStakingComplete = (amount: number) => {
+    setHasStaked(true);
+    setStakedAmount(amount);
+    
+    toast({
+      title: "Staking Successful",
+      description: `You've staked ${amount} FeedCoin for this donation`
+    });
   };
   
   return (
@@ -226,6 +253,26 @@ export default function DonatePage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {!hasStaked && (
+              <div className="mb-8">
+                <StakingForm formType="donation" onStakingComplete={handleStakingComplete} />
+              </div>
+            )}
+            
+            {hasStaked && (
+              <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg mb-8 flex items-start gap-3 border border-amber-200 dark:border-amber-700/30">
+                <Coins className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium text-amber-700 dark:text-amber-300">
+                    You've staked {stakedAmount} FeedCoin
+                  </p>
+                  <p className="text-sm text-amber-600 dark:text-amber-400">
+                    Your stake will be returned upon successful donation handover
+                  </p>
+                </div>
+              </div>
+            )}
+            
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 {/* Donor Information Section */}
@@ -920,10 +967,10 @@ export default function DonatePage() {
                 <div className="pt-4">
                   <Button 
                     type="submit" 
-                    className="btn-gradient w-full" 
-                    disabled={isSubmitting}
+                    className={hasStaked ? "btn-gradient w-full" : "w-full bg-muted text-muted-foreground"}
+                    disabled={isSubmitting || !hasStaked}
                   >
-                    {isSubmitting ? "Creating FoodFlag..." : "Create FoodFlag"}
+                    {isSubmitting ? "Creating FoodFlag..." : !hasStaked ? "Stake FeedCoin Required" : "Create FoodFlag"}
                   </Button>
                 </div>
               </form>

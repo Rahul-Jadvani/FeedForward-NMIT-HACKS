@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -26,8 +27,9 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { FoodFlag } from "./FoodFlagCard";
-import { Check, Info } from "lucide-react";
+import { Check, Info, Coins, AlertTriangle } from "lucide-react";
 import { ClaimSuccess } from "./ClaimSuccess";
+import { StakingForm } from "./StakingForm";
 
 const claimFormSchema = z.object({
   fullName: z.string().min(2, { message: "Name must be at least 2 characters" }),
@@ -55,6 +57,9 @@ interface ClaimFormProps {
 export function ClaimForm({ foodFlag, open, onOpenChange, onSuccess }: ClaimFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [hasStaked, setHasStaked] = useState(false);
+  const [stakedAmount, setStakedAmount] = useState(0);
+  const [showStakingForm, setShowStakingForm] = useState(true);
   
   const form = useForm<ClaimFormValues>({
     resolver: zodResolver(claimFormSchema),
@@ -72,11 +77,19 @@ export function ClaimForm({ foodFlag, open, onOpenChange, onSuccess }: ClaimForm
   });
 
   const onSubmit = async (values: ClaimFormValues) => {
+    if (!hasStaked) {
+      toast.error("Staking Required", {
+        description: "You must stake FeedCoin to submit this claim.",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
       console.log("Form values submitted:", values);
       console.log("For food flag:", foodFlag.id);
+      console.log("Staked amount:", stakedAmount);
       
       // Simulate API call with timeout
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -93,6 +106,11 @@ export function ClaimForm({ foodFlag, open, onOpenChange, onSuccess }: ClaimForm
       // Show success dialog
       setShowSuccessDialog(true);
       
+      // Reset staking state
+      setHasStaked(false);
+      setStakedAmount(0);
+      setShowStakingForm(true);
+      
       // Call success callback
       setTimeout(onSuccess, 5000);
       
@@ -106,6 +124,16 @@ export function ClaimForm({ foodFlag, open, onOpenChange, onSuccess }: ClaimForm
     }
   };
 
+  const handleStakingComplete = (amount: number) => {
+    setHasStaked(true);
+    setStakedAmount(amount);
+    setShowStakingForm(false);
+    
+    toast.success("Staking Successful", {
+      description: `You've staked ${amount} FeedCoin for this claim`
+    });
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -117,223 +145,247 @@ export function ClaimForm({ foodFlag, open, onOpenChange, onSuccess }: ClaimForm
             </DialogDescription>
           </DialogHeader>
           
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Personal Information */}
-                <FormField
-                  control={form.control}
-                  name="fullName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Full Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Your full name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="mobileNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mobile Number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Your contact number" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+          {showStakingForm && !hasStaked ? (
+            <div className="py-4">
+              <StakingForm formType="claim" onStakingComplete={handleStakingComplete} />
+            </div>
+          ) : (
+            <>
+              {hasStaked && (
+                <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg mb-6 flex items-start gap-3 border border-amber-200 dark:border-amber-700/30">
+                  <Coins className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-amber-700 dark:text-amber-300">
+                      You've staked {stakedAmount} FeedCoin
+                    </p>
+                    <p className="text-sm text-amber-600 dark:text-amber-400">
+                      Your stake will be returned upon successful food pickup
+                    </p>
+                  </div>
+                </div>
+              )}
               
-              {/* Claim Details */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="quantityRequested"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Quantity Requested</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text" 
-                          placeholder="How much food you need"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Available: {foodFlag.quantity}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="pickupTime"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Pickup Time</FormLabel>
-                      <FormControl>
-                        <select
-                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                          {...field}
-                        >
-                          <option value="Within 1 hour">Within 1 hour</option>
-                          <option value="1-3 hours">1-3 hours</option>
-                          <option value="Today">Today</option>
-                          <option value="Tomorrow">Tomorrow</option>
-                        </select>
-                      </FormControl>
-                      <FormDescription>
-                        Expires in {foodFlag.expiryTime}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              
-              {/* Pickup Person */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="pickupPersonName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Pickup Person Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Who will collect the food" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="pickupContactNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Pickup Contact Number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Pickup person's contact" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              
-              {/* Transport Mode */}
-              <FormField
-                control={form.control}
-                name="transportMode"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Mode of Transport</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="flex flex-wrap gap-4"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="On Foot" id="transport-foot" />
-                          <label htmlFor="transport-foot" className="text-sm">On Foot</label>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Personal Information */}
+                    <FormField
+                      control={form.control}
+                      name="fullName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Full Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Your full name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="mobileNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Mobile Number</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Your contact number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  {/* Claim Details */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="quantityRequested"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Quantity Requested</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text" 
+                              placeholder="How much food you need"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Available: {foodFlag.quantity}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="pickupTime"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Pickup Time</FormLabel>
+                          <FormControl>
+                            <select
+                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                              {...field}
+                            >
+                              <option value="Within 1 hour">Within 1 hour</option>
+                              <option value="1-3 hours">1-3 hours</option>
+                              <option value="Today">Today</option>
+                              <option value="Tomorrow">Tomorrow</option>
+                            </select>
+                          </FormControl>
+                          <FormDescription>
+                            Expires in {foodFlag.expiryTime}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  {/* Pickup Person */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="pickupPersonName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Pickup Person Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Who will collect the food" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="pickupContactNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Pickup Contact Number</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Pickup person's contact" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  {/* Transport Mode */}
+                  <FormField
+                    control={form.control}
+                    name="transportMode"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <FormLabel>Mode of Transport</FormLabel>
+                        <FormControl>
+                          <RadioGroup
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            className="flex flex-wrap gap-4"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="On Foot" id="transport-foot" />
+                              <label htmlFor="transport-foot" className="text-sm">On Foot</label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="Bicycle" id="transport-bicycle" />
+                              <label htmlFor="transport-bicycle" className="text-sm">Bicycle</label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="Motorbike" id="transport-motorbike" />
+                              <label htmlFor="transport-motorbike" className="text-sm">Motorbike</label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="Car" id="transport-car" />
+                              <label htmlFor="transport-car" className="text-sm">Car</label>
+                            </div>
+                          </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Additional Notes */}
+                  <FormField
+                    control={form.control}
+                    name="additionalNotes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Additional Notes</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Any special instructions or requests for the donor"
+                            className="resize-none"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Terms Agreement */}
+                  <FormField
+                    control={form.control}
+                    name="termsAgreed"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>
+                            I agree to the terms and conditions
+                          </FormLabel>
+                          <FormDescription>
+                            By claiming this food, you agree to collect it within the specified time frame and accept responsibility for its proper handling.
+                          </FormDescription>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="Bicycle" id="transport-bicycle" />
-                          <label htmlFor="transport-bicycle" className="text-sm">Bicycle</label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="Motorbike" id="transport-motorbike" />
-                          <label htmlFor="transport-motorbike" className="text-sm">Motorbike</label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="Car" id="transport-car" />
-                          <label htmlFor="transport-car" className="text-sm">Car</label>
-                        </div>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              {/* Additional Notes */}
-              <FormField
-                control={form.control}
-                name="additionalNotes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Additional Notes</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Any special instructions or requests for the donor"
-                        className="resize-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              {/* Terms Agreement */}
-              <FormField
-                control={form.control}
-                name="termsAgreed"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>
-                        I agree to the terms and conditions
-                      </FormLabel>
-                      <FormDescription>
-                        By claiming this food, you agree to collect it within the specified time frame and accept responsibility for its proper handling.
-                      </FormDescription>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <DialogFooter className="pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit"
-                  className="btn-gradient"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    "Processing..."
-                  ) : (
-                    <>
-                      <Check className="mr-2 h-4 w-4" /> Submit Claim
-                    </>
-                  )}
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <DialogFooter className="pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => onOpenChange(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit"
+                      className={hasStaked ? "btn-gradient" : "bg-muted text-muted-foreground"}
+                      disabled={isSubmitting || !hasStaked}
+                    >
+                      {isSubmitting ? (
+                        "Processing..."
+                      ) : !hasStaked ? (
+                        "Stake FeedCoin Required"
+                      ) : (
+                        <>
+                          <Check className="mr-2 h-4 w-4" /> Submit Claim
+                        </>
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </>
+          )}
         </DialogContent>
       </Dialog>
       
