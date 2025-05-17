@@ -6,153 +6,179 @@ import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine";
-import { Input } from "@/components/ui/input";
+import "../types/leaflet-extensions";
+
+interface FoodFlag {
+  id: string;
+  title: string;
+  coordinates: [number, number];
+  [key: string]: any;
+}
 
 interface InteractiveMapProps {
   foodFlags: any[];
   onFoodFlagClick?: (id: string) => void;
 }
 
-// Extend the Leaflet namespace for the missing Geocoder type
-declare module "leaflet" {
-  namespace Control {
-    interface GeocoderOptions {
-      geocoder?: any;
-      defaultMarkGeocode?: boolean;
-    }
-    
-    class Geocoder extends Control {
-      constructor(options?: GeocoderOptions);
-      on(type: string, fn: (e: any) => void): this;
-      markGeocode(result: any): void;
-    }
-    
-    function geocoder(options?: GeocoderOptions): Geocoder;
-  }
-}
-
 const InteractiveMap = ({ foodFlags, onFoodFlagClick }: InteractiveMapProps) => {
-  const mapRef = useRef(null);
-  const mapInstanceRef = useRef(null);
+  const mapRef = useRef<HTMLDivElement | null>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const userLocationRef = useRef<L.Marker | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [geolocationEnabled, setGeolocationEnabled] = useState(false);
-  const [liveAddress, setLiveAddress] = useState("");
-  const [selectedFlag, setSelectedFlag] = useState(null);
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
 
-  const parseCoordinates = (coords) => {
-    const [lat, lng] = coords
-      .split(",")
-      .map((coord) => parseFloat(coord.trim()));
-    return L.latLng(lat, lng);
-  };
-
-  // Function to fetch coordinates from a place name using Nominatim API
-  const getCoordinatesFromPlace = async (place) => {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${place}&format=json&addressdetails=1`
+  // Function to get user's geolocation
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation([latitude, longitude]);
+          
+          if (mapInstanceRef.current) {
+            mapInstanceRef.current.setView([latitude, longitude], 15);
+            
+            // Update or create user location marker
+            if (userLocationRef.current) {
+              userLocationRef.current.setLatLng([latitude, longitude]);
+            } else {
+              userLocationRef.current = L.marker([latitude, longitude], {
+                icon: L.icon({
+                  iconUrl: "/icons/user-location.svg",
+                  iconSize: [32, 32],
+                  iconAnchor: [16, 16],
+                }),
+                zIndexOffset: 1000,
+              }).addTo(mapInstanceRef.current);
+            }
+          }
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+        }
       );
-      const data = await response.json();
-      if (data.length > 0) {
-        const { lat, lon } = data[0];
-        return L.latLng(lat, lon);
-      }
-      return null;
-    } catch (error) {
-      console.error("Error fetching coordinates:", error);
-      return null;
+    } else {
+      console.error("Geolocation is not supported by this browser.");
     }
   };
-
-  // Function to reverse geocode coordinates to an address
-  const reverseGeocode = (lat, lon) => {
-    const geocodeUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
-    fetch(geocodeUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data && data.display_name) {
-          setLiveAddress(data.display_name);
-        }
-      })
-      .catch((error) => console.error("Error reversing geocode:", error));
+  
+  // Add food flag markers to the map
+  const addFoodFlagMarkers = (map: L.Map) => {
+    // Clear existing markers
+    markersRef.current.forEach((marker) => {
+      marker.remove();
+    });
+    markersRef.current = [];
+    
+    foodFlags.forEach((flag) => {
+      // If flag has predefined coordinates
+      if (flag.coordinates) {
+        const [lat, lng] = flag.coordinates;
+        const marker = L.marker([lat, lng], {
+          icon: L.icon({
+            iconUrl: "/icons/food-flag.svg",
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+          }),
+        }).addTo(map);
+        
+        // Add popup with information
+        marker.bindPopup(`
+          <div class="font-medium">${flag.title}</div>
+          <div class="text-xs mt-1">${flag.foodType}</div>
+          <div class="text-xs text-muted-foreground mt-1">${flag.expiryTime}</div>
+        `);
+        
+        // Add click handler for marker
+        marker.on('click', () => {
+          if (onFoodFlagClick) {
+            onFoodFlagClick(flag.id);
+          }
+        });
+        
+        markersRef.current.push(marker);
+      }
+      // If flag has address but no coordinates, we could geocode it here
+    });
   };
-
+  
+  // Function to create a route between user location and a food flag
+  const createRoute = (map: L.Map, destination: [number, number]) => {
+    if (!userLocation) return;
+    
+    // Clear existing routes
+    if (map && (window.L as any).Routing) {
+      // Create routing control
+      const control = (window.L as any).Routing.control({
+        waypoints: [
+          L.latLng(userLocation[0], userLocation[1]),
+          L.latLng(destination[0], destination[1])
+        ],
+        routeWhileDragging: true,
+        showAlternatives: true,
+        altLineOptions: {
+          styles: [
+            { color: '#6b5cff', opacity: 0.4 }
+          ]
+        },
+        lineOptions: {
+          styles: [
+            { color: '#00cc52', opacity: 0.8, weight: 5 }
+          ]
+        },
+        createMarker: function() { return null; } // Don't create default markers
+      }).addTo(map);
+      
+      return control;
+    }
+  };
+  
   // Initialize map
   const initializeMap = () => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
-    const newMap = L.map(mapRef.current).setView([19.0760, 72.8777], 13); // Mumbai coordinates
-
-    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution:
-        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    const newMap = L.map(mapRef.current, {
+      center: [19.0760, 72.8777], // Mumbai coordinates as default
+      zoom: 13,
+      layers: [
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        })
+      ],
+      zoomControl: false
+    });
+    
+    // Add zoom control in a custom position
+    L.control.zoom({
+      position: 'bottomright'
     }).addTo(newMap);
-
-    mapInstanceRef.current = newMap;
-
-    const geoletOptions = {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0,
+    
+    // Add custom geolocation button
+    const geoButton = L.control({ position: 'bottomright' });
+    geoButton.onAdd = function() {
+      const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+      div.innerHTML = `<a href="#" title="My location" role="button" aria-label="My location" class="bg-white hover:bg-gray-100 flex items-center justify-center w-[30px] h-[30px]">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#00cc52" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="4" />
+        </svg>
+      </a>`;
+      
+      div.onclick = function(e) {
+        e.preventDefault();
+        getUserLocation();
+      };
+      
+      return div;
     };
-
-    const locateUser = () => {
-      if (!navigator.geolocation) {
-        console.warn("Geolocation is not supported by this browser.");
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-
-          const userMarker = L.marker([latitude, longitude], {
-            icon: L.icon({
-              iconUrl: "/icons/user-location.svg",
-              iconSize: [32, 32],
-              iconAnchor: [16, 32],
-            }),
-          }).addTo(newMap);
-          userMarker.bindPopup("You are here!").openPopup();
-
-          newMap.setView([latitude, longitude], 15);
-          setGeolocationEnabled(true);
-
-          reverseGeocode(latitude, longitude);
-        },
-        (error) => {
-          console.error("Geolocation error:", error);
-        },
-        geoletOptions
-      );
-    };
-
-    const geoButton = L.control({ position: "topright" });
-    geoButton.onAdd = () => {
-      const btn = L.DomUtil.create(
-        "button",
-        "leaflet-bar leaflet-control leaflet-control-custom"
-      );
-      btn.innerText = "📍 Locate Me";
-      btn.style.cursor = "pointer";
-      btn.style.padding = "8px";
-      btn.style.backgroundColor = "#000000";
-      btn.style.border = "1px solid #fff";
-      btn.style.color = "#fff";
-      btn.style.borderRadius = "4px";
-
-      btn.onclick = () => locateUser();
-
-      return btn;
-    };
-
     geoButton.addTo(newMap);
 
     // Add geocoder control (Autocomplete for search)
     if (window.L && window.L.Control && window.L.Control.Geocoder) {
-      const geocoder = new L.Control.Geocoder.Nominatim();
-      new L.Control.Geocoder({
+      const geocoder = new window.L.Control.Geocoder.Nominatim();
+      new window.L.Control.Geocoder({
         geocoder: geocoder,
         defaultMarkGeocode: false,
       })
@@ -164,52 +190,15 @@ const InteractiveMap = ({ foodFlags, onFoodFlagClick }: InteractiveMapProps) => 
     }
 
     // Add markers for food flags
-    foodFlags.forEach((flag) => {
-      getCoordinatesFromPlace(flag.location).then((coords) => {
-        if (coords) {
-          const marker = L.marker(coords, {
-            icon: L.icon({
-              iconUrl: "/icons/food-flag.svg",
-              iconSize: [32, 32],
-              iconAnchor: [16, 32],
-            }),
-          }).addTo(newMap);
-
-          const popupContent = `
-            <div class="p-2">
-              <h3 class="font-bold text-lg mb-2">${flag.title}</h3>
-              <p class="text-sm mb-2">${flag.description}</p>
-              <div class="flex items-center gap-2 mb-2">
-                <span class="text-sm font-medium">Distance:</span>
-                <span class="text-sm">${flag.distance}</span>
-              </div>
-              <div class="flex items-center gap-2 mb-2">
-                <span class="text-sm font-medium">Expires in:</span>
-                <span class="text-sm">${flag.expiryTime}</span>
-              </div>
-              <button 
-                class="w-full bg-primary text-white py-1 px-2 rounded hover:bg-primary/90 transition-colors"
-                onclick="window.dispatchEvent(new CustomEvent('foodFlagClick', {detail: '${flag.id}'}))"
-              >
-                View Details
-              </button>
-            </div>
-          `;
-
-          marker.bindPopup(popupContent);
-
-          // Add click event listener
-          marker.on('click', () => {
-            setSelectedFlag(flag);
-            if (onFoodFlagClick) {
-              onFoodFlagClick(flag.id);
-            }
-          });
-        }
-      });
-    });
+    addFoodFlagMarkers(newMap);
+    
+    // Try to get user location and add to map
+    getUserLocation();
+    
+    mapInstanceRef.current = newMap;
   };
 
+  // Hook for loading Leaflet from CDN
   useEffect(() => {
     if (typeof window !== "undefined") {
       const leafletCSS = document.createElement("link");
@@ -230,8 +219,15 @@ const InteractiveMap = ({ foodFlags, onFoodFlagClick }: InteractiveMapProps) => 
         routingScript.src =
           "https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js";
         routingScript.onload = () => {
-          setIsLoaded(true);
-          initializeMap();
+          // Load Leaflet Geocoder
+          const geocoderScript = document.createElement("script");
+          geocoderScript.src =
+            "https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js";
+          geocoderScript.onload = () => {
+            setIsLoaded(true);
+            initializeMap();
+          };
+          document.body.appendChild(geocoderScript);
         };
         document.body.appendChild(routingScript);
       };
@@ -250,73 +246,33 @@ const InteractiveMap = ({ foodFlags, onFoodFlagClick }: InteractiveMapProps) => 
   // Update markers when foodFlags change
   useEffect(() => {
     if (mapInstanceRef.current && isLoaded) {
-      // Clear existing markers
-      mapInstanceRef.current.eachLayer((layer) => {
-        if (layer instanceof L.Marker) {
-          mapInstanceRef.current.removeLayer(layer);
-        }
-      });
-
-      // Add new markers
-      foodFlags.forEach((flag) => {
-        getCoordinatesFromPlace(flag.location).then((coords) => {
-          if (coords) {
-            const marker = L.marker(coords, {
-              icon: L.icon({
-                iconUrl: "/icons/food-flag.svg",
-                iconSize: [32, 32],
-                iconAnchor: [16, 32],
-              }),
-            }).addTo(mapInstanceRef.current);
-
-            const popupContent = `
-              <div class="p-2">
-                <h3 class="font-bold text-lg mb-2">${flag.title}</h3>
-                <p class="text-sm mb-2">${flag.description}</p>
-                <div class="flex items-center gap-2 mb-2">
-                  <span class="text-sm font-medium">Distance:</span>
-                  <span class="text-sm">${flag.distance}</span>
-                </div>
-                <div class="flex items-center gap-2 mb-2">
-                  <span class="text-sm font-medium">Expires in:</span>
-                  <span class="text-sm">${flag.expiryTime}</span>
-                </div>
-                <button 
-                  class="w-full bg-primary text-white py-1 px-2 rounded hover:bg-primary/90 transition-colors"
-                  onclick="window.dispatchEvent(new CustomEvent('foodFlagClick', {detail: '${flag.id}'}))"
-                >
-                  View Details
-                </button>
-              </div>
-            `;
-
-            marker.bindPopup(popupContent);
-
-            marker.on('click', () => {
-              setSelectedFlag(flag);
-              if (onFoodFlagClick) {
-                onFoodFlagClick(flag.id);
-              }
-            });
-          }
-        });
-      });
+      addFoodFlagMarkers(mapInstanceRef.current);
     }
-  }, [foodFlags, isLoaded, onFoodFlagClick]);
+  }, [foodFlags, isLoaded]);
+
+  // When routing to a specific flag
+  const routeToFlag = (flagId: string) => {
+    const flag = foodFlags.find(f => f.id === flagId);
+    if (!flag || !flag.coordinates || !mapInstanceRef.current) return;
+    
+    createRoute(mapInstanceRef.current, flag.coordinates);
+  };
 
   return (
-    <div>
-      <div className="mb-4">
-        <label className="text-sm font-medium mb-2 block">Live Location Address</label>
-        <Input
-          type="text"
-          value={liveAddress}
-          readOnly
-          className="w-full"
-        />
-      </div>
-
-      <div id="map" ref={mapRef} className="h-[500px] rounded-lg" />
+    <div 
+      ref={mapRef} 
+      className="w-full h-full relative border border-border rounded-lg overflow-hidden"
+      style={{ 
+        minHeight: "300px",
+        borderColor: "#e5e7eb", 
+        boxShadow: "0 1px 3px rgba(0,0,0,0.1)" 
+      }}
+    >
+      {!isLoaded && (
+        <div className="absolute inset-0 flex items-center justify-center bg-background/80">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      )}
     </div>
   );
 };

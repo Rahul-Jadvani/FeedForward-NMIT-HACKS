@@ -8,34 +8,17 @@ import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine";
 import { Input } from "@/components/ui/input";
 import { FormControl } from "@/components/ui/form";
+import "../types/leaflet-extensions";
 
 interface LocationPickerProps {
   value?: string;
   onChange?: (address: string) => void;
 }
 
-// Extend the Leaflet namespace for the missing Geocoder type
-declare module "leaflet" {
-  namespace Control {
-    interface GeocoderOptions {
-      geocoder?: any;
-      defaultMarkGeocode?: boolean;
-    }
-    
-    class Geocoder extends Control {
-      constructor(options?: GeocoderOptions);
-      on(type: string, fn: (e: any) => void): this;
-      markGeocode(result: any): void;
-    }
-    
-    function geocoder(options?: GeocoderOptions): Geocoder;
-  }
-}
-
 const LocationPicker = ({ value, onChange }: LocationPickerProps) => {
-  const mapRef = useRef(null);
-  const mapInstanceRef = useRef(null);
-  const markerRef = useRef(null);
+  const mapRef = useRef<HTMLDivElement | null>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const markerRef = useRef<L.Marker | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [address, setAddress] = useState(value || "");
 
@@ -117,8 +100,8 @@ const LocationPicker = ({ value, onChange }: LocationPickerProps) => {
 
     // Add geocoder control (Autocomplete for search)
     if (window.L && window.L.Control && window.L.Control.Geocoder) {
-      const geocoder = new L.Control.Geocoder.Nominatim();
-      new L.Control.Geocoder({
+      const geocoder = new window.L.Control.Geocoder.Nominatim();
+      new window.L.Control.Geocoder({
         geocoder,
         defaultMarkGeocode: false,
       })
@@ -222,7 +205,7 @@ const LocationPicker = ({ value, onChange }: LocationPickerProps) => {
       if (value) {
         getCoordinatesFromPlace(value).then((coords) => {
           if (coords) {
-            mapInstanceRef.current.setView(coords, 16);
+            mapInstanceRef.current?.setView(coords, 16);
             if (markerRef.current) {
               markerRef.current.setLatLng(coords);
             } else {
