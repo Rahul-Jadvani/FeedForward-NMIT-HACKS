@@ -6,6 +6,8 @@ type Theme = 'light' | 'dark' | 'forest' | 'sunset' | 'ocean';
 interface ThemeContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
+  isEditingLayout: boolean;
+  setIsEditingLayout: (isEditing: boolean) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -15,6 +17,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const storedTheme = localStorage.getItem('theme');
     return (storedTheme as Theme) || 'dark'; // Set dark as default
   });
+  
+  const [isEditingLayout, setIsEditingLayout] = useState<boolean>(false);
 
   useEffect(() => {
     localStorage.setItem('theme', theme);
@@ -23,7 +27,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [theme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, isEditingLayout, setIsEditingLayout }}>
       {children}
     </ThemeContext.Provider>
   );

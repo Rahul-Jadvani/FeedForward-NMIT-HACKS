@@ -36,116 +36,158 @@
     --radius: 1.25rem; /* Pixel-style rounded corners */
   }
 
-  /* Update light mode with better contrast */
+  /* Update light mode with better contrast using the specified color palette */
   [data-theme='light'] {
     --background: 210 80% 98%; /* Very light blue */
     --foreground: 218 44% 12%; /* #101C2C */
+    
     --card: 0 0% 100% / 0.5; /* Semi-transparent white */
     --card-foreground: 218 44% 12%; /* #101C2C */
+    
     --popover: 0 0% 100% / 0.9; /* Semi-transparent white */
     --popover-foreground: 218 44% 12%; /* #101C2C */
-    --primary: 145 100% 35%; /* Darker green for better contrast */
+    
+    --primary: 145 100% 35%; /* #00CC52 slightly darker for better contrast */
     --primary-foreground: 0 0% 100%; /* Pure white */
-    --secondary: 255 100% 60%; /* Darker purple for better contrast */
+    
+    --secondary: 255 100% 60%; /* #6b5cff slightly adjusted */
     --secondary-foreground: 0 0% 100%; /* Pure white */
+    
     --muted: 213 22% 60% / 0.2; /* #6884CA with transparency */
     --muted-foreground: 218 44% 20%; /* Darker for better contrast */
+    
     --accent: 213 22% 60% / 0.2; /* #6884CA with transparency */
     --accent-foreground: 218 44% 12%; /* #101C2C */
-    --destructive: 0 84.2% 50%; /* Darker red for better contrast */
+    
+    --destructive: 0 84.2% 50%; /* Brighter red for better visibility */
     --destructive-foreground: 0 0% 100%; /* Pure white */
+    
     --border: 213 22% 60% / 0.3; /* #6884CA with transparency */
     --input: 213 22% 60% / 0.3; /* #6884CA with transparency */
     --ring: 145 100% 35%; /* Darker green for better contrast */
   }
 
-  /* Keep dark mode as default */
+  /* Dark mode with white text as requested */
   [data-theme='dark'] {
     --background: 218 44% 12%; /* #101C2C */
     --foreground: 0 0% 100%; /* Pure white */
+    
     --card: 0 0% 100% / 0.05; /* Very transparent white */
     --card-foreground: 0 0% 100%; /* Pure white */
+    
     --popover: 0 0% 100% / 0.05; /* Very transparent white */
     --popover-foreground: 0 0% 100%; /* Pure white */
+    
     --primary: 145 100% 40%; /* #00CC52 */
     --primary-foreground: 0 0% 100%; /* Pure white */
+    
     --secondary: 255 100% 70%; /* #6b5cff */
     --secondary-foreground: 0 0% 100%; /* Pure white */
+    
     --muted: 213 22% 60% / 0.15; /* #6884CA with transparency */
     --muted-foreground: 0 0% 100% / 0.7; /* Semi-transparent white */
+    
     --accent: 213 22% 60% / 0.15; /* #6884CA with transparency */
     --accent-foreground: 0 0% 100%; /* Pure white */
+    
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%; /* Pure white */
+    
     --border: 213 22% 60% / 0.2; /* #6884CA with transparency */
     --input: 213 22% 60% / 0.2; /* #6884CA with transparency */
     --ring: 145 100% 40%; /* #00CC52 */
   }
   
-  /* Keep other theme variations but update them with consistent color contrast */
+  /* Forest theme with pastel colors and white text */
   [data-theme='forest'] {
     --background: 218 44% 12%; /* #101C2C */
-    --foreground: 145 100% 40%; /* #00CC52 */
-    --card: 0 0% 100% / 0.05; /* Very transparent white */
-    --card-foreground: 145 100% 40%; /* #00CC52 */
-    --popover: 0 0% 100% / 0.05; /* Very transparent white */
-    --popover-foreground: 145 100% 40%; /* #00CC52 */
+    --foreground: 0 0% 100%; /* Pure white */
+    
+    --card: 145 70% 60% / 0.1; /* Pastel green with transparency */
+    --card-foreground: 0 0% 100%; /* Pure white */
+    
+    --popover: 145 70% 60% / 0.1; /* Pastel green with transparency */
+    --popover-foreground: 0 0% 100%; /* Pure white */
+    
     --primary: 145 100% 40%; /* #00CC52 */
     --primary-foreground: 0 0% 100%; /* Pure white */
+    
     --secondary: 255 100% 70%; /* #6b5cff */
     --secondary-foreground: 0 0% 100%; /* Pure white */
-    --muted: 213 22% 60% / 0.15; /* #6884CA with transparency */
-    --muted-foreground: 145 100% 60%; /* Lighter green */
-    --accent: 213 22% 60% / 0.15; /* #6884CA with transparency */
-    --accent-foreground: 145 100% 40%; /* #00CC52 */
+    
+    --muted: 145 40% 60% / 0.15; /* Pastel green with transparency */
+    --muted-foreground: 0 0% 100% / 0.7; /* Semi-transparent white */
+    
+    --accent: 145 40% 60% / 0.15; /* Pastel green with transparency */
+    --accent-foreground: 0 0% 100%; /* Pure white */
+    
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%; /* Pure white */
-    --border: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --input: 213 22% 60% / 0.2; /* #6884CA with transparency */
+    
+    --border: 145 40% 60% / 0.2; /* Pastel green with transparency */
+    --input: 145 40% 60% / 0.2; /* Pastel green with transparency */
     --ring: 145 100% 40%; /* #00CC52 */
   }
 
+  /* Sunset theme with pastel colors and white text */
   [data-theme='sunset'] {
-    --background: 210 80% 98%; /* Very light blue */
-    --foreground: 218 44% 12%; /* #101C2C */
-    --card: 0 0% 0% / 0.05; /* Very transparent black */
-    --card-foreground: 218 44% 12%; /* #101C2C */
-    --popover: 0 0% 0% / 0.05; /* Very transparent black */
-    --popover-foreground: 218 44% 12%; /* #101C2C */
-    --primary: 145 100% 35%; /* Darker green for better contrast */
+    --background: 218 44% 12%; /* #101C2C */
+    --foreground: 0 0% 100%; /* Pure white */
+    
+    --card: 30 80% 70% / 0.1; /* Pastel orange with transparency */
+    --card-foreground: 0 0% 100%; /* Pure white */
+    
+    --popover: 30 80% 70% / 0.1; /* Pastel orange with transparency */
+    --popover-foreground: 0 0% 100%; /* Pure white */
+    
+    --primary: 145 100% 40%; /* #00CC52 */
     --primary-foreground: 0 0% 100%; /* Pure white */
-    --secondary: 255 100% 60%; /* Darker purple for better contrast */
+    
+    --secondary: 255 100% 70%; /* #6b5cff */
     --secondary-foreground: 0 0% 100%; /* Pure white */
-    --muted: 213 22% 60% / 0.15; /* #6884CA with transparency */
-    --muted-foreground: 218 44% 30%; /* Darker for better contrast */
-    --accent: 213 22% 60% / 0.15; /* #6884CA with transparency */
-    --accent-foreground: 218 44% 12%; /* #101C2C */
-    --destructive: 0 84.2% 50%; /* Darker red for better contrast */
+    
+    --muted: 30 60% 80% / 0.15; /* Pastel orange with transparency */
+    --muted-foreground: 0 0% 100% / 0.7; /* Semi-transparent white */
+    
+    --accent: 30 60% 80% / 0.15; /* Pastel orange with transparency */
+    --accent-foreground: 0 0% 100%; /* Pure white */
+    
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%; /* Pure white */
-    --border: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --input: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --ring: 145 100% 35%; /* Darker green for better contrast */
+    
+    --border: 30 60% 80% / 0.2; /* Pastel orange with transparency */
+    --input: 30 60% 80% / 0.2; /* Pastel orange with transparency */
+    --ring: 145 100% 40%; /* #00CC52 */
   }
 
+  /* Ocean theme with pastel colors and white text */
   [data-theme='ocean'] {
     --background: 218 44% 12%; /* #101C2C */
     --foreground: 0 0% 100%; /* Pure white */
-    --card: 0 0% 100% / 0.05; /* Very transparent white */
+    
+    --card: 210 70% 70% / 0.1; /* Pastel blue with transparency */
     --card-foreground: 0 0% 100%; /* Pure white */
-    --popover: 0 0% 100% / 0.05; /* Very transparent white */
+    
+    --popover: 210 70% 70% / 0.1; /* Pastel blue with transparency */
     --popover-foreground: 0 0% 100%; /* Pure white */
+    
     --primary: 145 100% 40%; /* #00CC52 */
     --primary-foreground: 0 0% 100%; /* Pure white */
+    
     --secondary: 255 100% 70%; /* #6b5cff */
     --secondary-foreground: 0 0% 100%; /* Pure white */
-    --muted: 213 22% 40%; /* Darker version of #6884CA */
+    
+    --muted: 210 50% 70% / 0.15; /* Pastel blue with transparency */
     --muted-foreground: 0 0% 100% / 0.7; /* Semi-transparent white */
-    --accent: 213 22% 60% / 0.15; /* #6884CA with transparency */
+    
+    --accent: 210 50% 70% / 0.15; /* Pastel blue with transparency */
     --accent-foreground: 0 0% 100%; /* Pure white */
+    
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%; /* Pure white */
-    --border: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --input: 213 22% 60% / 0.2; /* #6884CA with transparency */
+    
+    --border: 210 50% 70% / 0.2; /* Pastel blue with transparency */
+    --input: 210 50% 70% / 0.2; /* Pastel blue with transparency */
     --ring: 145 100% 40%; /* #00CC52 */
   }
 }

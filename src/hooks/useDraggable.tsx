@@ -13,9 +13,11 @@ export function useDraggable<T>({ items, setItems }: DraggableProps<T>) {
   const handleDragStart = (e: React.DragEvent<HTMLElement>, index: number) => {
     // Add a ghost image that's a copy of the dragged element
     const draggedElement = e.currentTarget.cloneNode(true) as HTMLElement;
-    draggedElement.style.opacity = '0.5';
+    draggedElement.style.opacity = '0.7';
     draggedElement.style.position = 'absolute';
     draggedElement.style.top = '-1000px';
+    draggedElement.style.boxShadow = '0 10px 20px rgba(0,0,0,0.2)';
+    draggedElement.style.transform = 'rotate(2deg)';
     document.body.appendChild(draggedElement);
     e.dataTransfer.setDragImage(draggedElement, 0, 0);
     

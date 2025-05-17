@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BentoGrid } from "@/components/BentoGrid";
+import { BentoGrid, BentoItem } from "@/components/BentoGrid";
 import { 
   MapPin, 
   Heart, 
@@ -35,7 +35,7 @@ const formatNumber = (num: number): string => {
 };
 
 export default function Home() {
-  const bentoItems = [
+  const bentoItems: BentoItem[] = [
     {
       id: "food-map",
       title: "FOOD MAP",

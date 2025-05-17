@@ -2,11 +2,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Shuffle, Save, RotateCcw, ArrowRight } from "lucide-react";
+import { Shuffle, Save, RotateCcw, ArrowRight, Edit, Move } from "lucide-react";
 import { useDraggable } from "@/hooks/useDraggable";
 import { toast } from "sonner";
+import { useTheme } from "@/contexts/ThemeContext";
 
-type BentoItem = {
+export type BentoItem = {
   id: string;
   title: string;
   description: string;
@@ -23,6 +24,7 @@ interface BentoGridProps {
 export function BentoGrid({ items }: BentoGridProps) {
   const [gridItems, setGridItems] = useState<BentoItem[]>(items);
   const [animatingItems, setAnimatingItems] = useState<boolean>(false);
+  const { isEditingLayout, setIsEditingLayout } = useTheme();
 
   // Load saved layout from localStorage
   useEffect(() => {
@@ -70,9 +72,14 @@ export function BentoGrid({ items }: BentoGridProps) {
     }, 300);
   };
 
-  const saveLayout = () => {
-    localStorage.setItem('bentoLayout', JSON.stringify(gridItems));
-    toast.success("Layout saved successfully!");
+  const toggleEditLayout = () => {
+    if (isEditingLayout) {
+      localStorage.setItem('bentoLayout', JSON.stringify(gridItems));
+      toast.success("Layout saved successfully!");
+    } else {
+      toast.info("Drag items to rearrange your layout");
+    }
+    setIsEditingLayout(!isEditingLayout);
   };
 
   const resetLayout = () => {
@@ -81,6 +88,7 @@ export function BentoGrid({ items }: BentoGridProps) {
       setGridItems(items);
       localStorage.removeItem('bentoLayout');
       setAnimatingItems(false);
+      setIsEditingLayout(false);
       toast.success("Layout reset to default!");
     }, 300);
   };
@@ -91,27 +99,36 @@ export function BentoGrid({ items }: BentoGridProps) {
         <Button 
           onClick={shuffleItems} 
           className="btn-gradient gap-2 animate-fade-in" 
-          disabled={animatingItems}
+          disabled={animatingItems || isEditingLayout}
         >
           <Shuffle className="h-4 w-4" />
           Shuffle
         </Button>
         <Button 
-          onClick={saveLayout} 
-          variant="secondary" 
-          className="gap-2 animate-fade-in" 
+          onClick={toggleEditLayout} 
+          variant={isEditingLayout ? "secondary" : "secondary"}
+          className={`gap-2 animate-fade-in ${isEditingLayout ? "bg-accent text-accent-foreground" : ""}`}
           style={{animationDelay: "0.1s"}}
           disabled={animatingItems}
         >
-          <Save className="h-4 w-4" />
-          Save Layout
+          {isEditingLayout ? (
+            <>
+              <Save className="h-4 w-4" />
+              Save Layout
+            </>
+          ) : (
+            <>
+              <Edit className="h-4 w-4" />
+              Edit Layout
+            </>
+          )}
         </Button>
         <Button 
           onClick={resetLayout} 
           variant="outline" 
           className="gap-2 animate-fade-in" 
           style={{animationDelay: "0.2s"}}
-          disabled={animatingItems}
+          disabled={animatingItems || isEditingLayout}
         >
           <RotateCcw className="h-4 w-4" />
           Reset
@@ -128,7 +145,31 @@ export function BentoGrid({ items }: BentoGridProps) {
           
           const animationDelay = `${index * 0.05}s`;
           
-          return (
+          return isEditingLayout ? (
+            <div 
+              key={item.id}
+              className={`${sizeClass} ${item.color} backdrop-blur-lg border border-white/20 rounded-xl p-6 
+                hover:border-white/40 transition-all hover:shadow-lg 
+                ${animatingItems ? 'animate-bounce-in' : 'animate-slide-up-fade'}
+                ${isEditingLayout ? 'cursor-move border-dashed border-2' : ''}`}
+              style={{ animationDelay }}
+              draggable={true}
+              onDragStart={(e) => handleDragStart(e, index)}
+              onDragEnter={(e) => handleDragEnter(e, index)}
+              onDragEnd={handleDragEnd}
+              onDragOver={(e) => e.preventDefault()}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center">
+                  {isEditingLayout ? <Move className="h-6 w-6" /> : item.icon}
+                </div>
+                <h3 className="font-display font-medium text-sm md:text-base uppercase">{item.title}</h3>
+              </div>
+              <p className="text-xs md:text-sm text-muted-foreground mt-2 uppercase font-medium">
+                {item.description}
+              </p>
+            </div>
+          ) : (
             <Link 
               key={item.id}
               to={item.to}
@@ -136,11 +177,6 @@ export function BentoGrid({ items }: BentoGridProps) {
                 hover:border-white/30 transition-all hover:shadow-lg hover:-translate-y-1 flex flex-col
                 ${animatingItems ? 'animate-bounce-in' : 'animate-slide-up-fade'}`}
               style={{ animationDelay }}
-              draggable={true}
-              onDragStart={(e) => handleDragStart(e, index)}
-              onDragEnter={(e) => handleDragEnter(e, index)}
-              onDragEnd={handleDragEnd}
-              onDragOver={(e) => e.preventDefault()}
             >
               <div className="flex items-center gap-3 mb-3">
                 <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center">
