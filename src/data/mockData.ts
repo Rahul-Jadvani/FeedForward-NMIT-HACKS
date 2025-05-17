@@ -15,6 +15,7 @@ export const mockFoodFlags: FoodFlag[] = [
     imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     donorName: "TechGlobal Inc.",
     donorRating: 4.8,
+    organizationAddress: "0x123abc456def789ghi012jkl345mno678pqr901",
     impact: {
       mealsProvided: 15,
       co2Saved: 12.5
@@ -33,6 +34,7 @@ export const mockFoodFlags: FoodFlag[] = [
     imageUrl: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     donorName: "Event Horizon Catering",
     donorRating: 4.9,
+    organizationAddress: "0x234bcd567efg890hij123klm456nop789qrs012",
     impact: {
       mealsProvided: 25,
       co2Saved: 20.3
@@ -51,6 +53,7 @@ export const mockFoodFlags: FoodFlag[] = [
     imageUrl: "https://images.unsplash.com/photo-1518843875459-f738682238a6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     donorName: "Sunnydale Organic Farms",
     donorRating: 4.7,
+    organizationAddress: "0x345cde678fgh901ijk234lmn567opq890rst123",
     impact: {
       mealsProvided: 30,
       co2Saved: 18.6
@@ -69,6 +72,7 @@ export const mockFoodFlags: FoodFlag[] = [
     imageUrl: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     donorName: "Golden Crust Bakery",
     donorRating: 4.9,
+    organizationAddress: "0x456def789ghi012jkl345mno678pqr901stu234",
     impact: {
       mealsProvided: 20,
       co2Saved: 8.3
@@ -87,6 +91,7 @@ export const mockFoodFlags: FoodFlag[] = [
     imageUrl: "https://images.unsplash.com/photo-1547592180-85f173990554?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     donorName: "Taste of Home",
     donorRating: 4.6,
+    organizationAddress: "0x567efg890hij123klm456nop789qrs012tuv345",
     impact: {
       mealsProvided: 10,
       co2Saved: 15.2
@@ -105,6 +110,7 @@ export const mockFoodFlags: FoodFlag[] = [
     imageUrl: "https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     donorName: "FreshMart",
     donorRating: 4.5,
+    organizationAddress: "0x678fgh901ijk234lmn567opq890rst123uvw456",
     impact: {
       mealsProvided: 40,
       co2Saved: 35.8
