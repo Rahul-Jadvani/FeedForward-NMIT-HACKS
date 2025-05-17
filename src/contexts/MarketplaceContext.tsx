@@ -1,6 +1,5 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid"; // This import will work now that we've installed the package
+import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
 
 export type ProductPriority = "high" | "medium" | "low";
