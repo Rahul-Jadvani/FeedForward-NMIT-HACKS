@@ -109,17 +109,17 @@ export function Sidebar() {
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) => cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
+                  "flex items-center gap-3 px-3 py-2 rounded-lg transition-all hover:scale-[1.02]",
                   hoverBgClass, 
                   isActive ? activeBgClass : "",
                   isActive ? activeTextColorClass : textColorClass,
                   collapsed && "justify-center",
-                  item.special && "text-red-500",
+                  item.special ? "text-theme-blue" : "",
                   "text-lg" // Increased font size
                 )}
               >
-                <item.icon size={22} /> {/* Slightly increased icon size */}
-                {!collapsed && <span>{item.label}</span>}
+                <item.icon size={22} className="transition-transform duration-300 hover:rotate-6" /> {/* Slightly increased icon size with animation */}
+                {!collapsed && <span className="transition-opacity duration-300">{item.label}</span>}
               </NavLink>
             ))}
           </nav>
@@ -127,7 +127,7 @@ export function Sidebar() {
           <Button
             variant="ghost"
             size="icon"
-            className={`self-end mt-4 ${textColorClass} ${hoverBgClass}`}
+            className={`self-end mt-4 ${textColorClass} ${hoverBgClass} transition-transform hover:scale-110 active:scale-95`}
             onClick={() => setCollapsed(!collapsed)}
           >
             {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}

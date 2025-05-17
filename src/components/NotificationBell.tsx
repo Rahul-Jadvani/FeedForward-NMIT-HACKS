@@ -47,13 +47,13 @@ export function NotificationBell() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="relative"
+            className="relative transition-transform hover:scale-110 active:scale-95"
             onClick={handleViewAll}
           >
-            <Bell className="h-[1.2rem] w-[1.2rem]" />
+            <Bell className="h-[1.2rem] w-[1.2rem] transition-all hover:text-primary" />
             {unreadCount > 0 && (
               <Badge 
-                className="absolute top-0 right-0 h-4 w-4 p-0 flex items-center justify-center bg-primary text-primary-foreground text-[10px] translate-x-1/3 -translate-y-1/3"
+                className="absolute top-0 right-0 h-4 w-4 p-0 flex items-center justify-center bg-primary text-primary-foreground text-[10px] translate-x-1/3 -translate-y-1/3 transition-transform animate-bounce-in"
               >
                 {unreadCount > 9 ? '9+' : unreadCount}
               </Badge>
@@ -62,7 +62,7 @@ export function NotificationBell() {
           </Button>
         </div>
       </HoverCardTrigger>
-      <HoverCardContent align="end" className="w-80">
+      <HoverCardContent align="end" className="w-80 animate-scale-in">
         <div className="space-y-2">
           <h4 className="font-semibold">Recent Notifications</h4>
           
@@ -71,10 +71,11 @@ export function NotificationBell() {
           ) : (
             <>
               <div className="space-y-2">
-                {recentNotifications.map((notification) => (
+                {recentNotifications.map((notification, index) => (
                   <div
                     key={notification.id}
-                    className="flex justify-between items-start text-sm p-2 -mx-2 rounded-md hover:bg-muted cursor-pointer"
+                    className="flex justify-between items-start text-sm p-2 -mx-2 rounded-md hover:bg-muted cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-sm"
+                    style={{ animationDelay: `${index * 100}ms` }}
                     onClick={handleViewAll}
                   >
                     <span className="font-medium">{notification.title}</span>
@@ -83,7 +84,11 @@ export function NotificationBell() {
                 ))}
               </div>
               
-              <Button size="sm" className="w-full" onClick={handleViewAll}>
+              <Button 
+                size="sm" 
+                className="w-full transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0" 
+                onClick={handleViewAll}
+              >
                 View All Notifications
               </Button>
             </>
