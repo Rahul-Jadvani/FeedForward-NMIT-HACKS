@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { BentoGrid } from "@/components/BentoGrid";
 import { 
   MapPin, 
   Heart, 
@@ -152,11 +153,11 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-r from-ff-green/10 to-ff-orange/10 -z-10" />
         <div className="container mx-auto px-4 flex flex-col lg:flex-row items-center gap-12">
           <div className="lg:w-1/2 space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight animate-fade-in">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-tight animate-fade-in">
               Rescuing Food,<br />
               <span className="gradient-text">Feeding Communities</span>
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-lg animate-fade-in" style={{animationDelay: "0.2s"}}>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-lg animate-fade-in text-white/90" style={{animationDelay: "0.2s"}}>
               Connect surplus food with those in need while earning rewards for your positive impact on the community and environment.
             </p>
             <div className="flex flex-wrap gap-4 pt-4 animate-fade-in" style={{animationDelay: "0.4s"}}>
@@ -171,7 +172,7 @@ export default function Home() {
           
           <div className="lg:w-1/2 relative animate-fade-in" style={{animationDelay: "0.3s"}}>
             <div className="w-full h-[400px] md:h-[500px] relative">
-              <div className="absolute top-0 right-0 w-[90%] h-[90%] rounded-2xl overflow-hidden shadow-lg">
+              <div className="absolute top-0 right-0 w-[90%] h-[90%] rounded-2xl overflow-hidden shadow-lg animate-slide-up-fade" style={{animationDelay: "0.5s"}}>
                 <img
                   src="https://img.freepik.com/premium-photo/happy-indian-children-enjoy-food-bread-dirty-crowded-streets-social-problem-poverty-hunger-lack-clean-drinking-water_184982-5918.jpg"
                   alt="Food donation app"
@@ -179,19 +180,19 @@ export default function Home() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
                   <div className="text-white">
-                    <h3 className="font-semibold text-lg">FoodFlag System</h3>
+                    <h3 className="font-display font-semibold text-lg">FoodFlag System</h3>
                     <p className="text-sm opacity-90">Connect donors with recipients in real-time</p>
                   </div>
                 </div>
               </div>
               
-              <div className="absolute bottom-0 left-0 w-[60%] h-[40%] bg-white rounded-2xl overflow-hidden shadow-lg border p-4 z-10 bg-blue-400 rounded-md bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-0 border border-green-500">
+              <div className="absolute bottom-0 left-0 w-[60%] h-[40%] bg-white rounded-2xl overflow-hidden shadow-lg border p-4 z-10 bg-blue-400 rounded-md bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-0 border border-green-500 animate-slide-up-fade" style={{animationDelay: "0.7s"}}>
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-ff-green/20 flex items-center justify-center">
                     <Award className="h-5 w-5 text-ff-green" />
                   </div>
                   <div>
-                    <h4 className="font-medium">Rewards & Impact</h4>
+                    <h4 className="font-display font-medium">Rewards & Impact</h4>
                     <p className="text-m text-muted-foreground">Earn FeedCoins for your contributions</p>
                     <p className="text-m text-muted-foreground">A plate of food may seem small to you, but to someone hungry, it's a message that they are seen, loved, and not forgotten.</p>
                   </div>
@@ -202,43 +203,9 @@ export default function Home() {
         </div>
       </section>
       
-      {/* Bento Grid Navigation */}
+      {/* Bento Grid Navigation - Now using the Interactive BentoGrid component */}
       <section className="py-16 container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
-          {bentoItems.map(item => {
-            // Define grid span classes based on size
-            const sizeClass = 
-              item.size === "large" ? "md:col-span-2 md:row-span-2" : 
-              item.size === "medium" ? "md:col-span-2" : 
-              "";
-            
-            return (
-              <Link 
-                key={item.id}
-                to={item.to} 
-                className={`${sizeClass} ${item.color} backdrop-blur-lg border border-white/10 rounded-xl p-6 hover:border-white/30 transition-all hover:shadow-lg hover:-translate-y-1 flex flex-col`}
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center">
-                    {item.icon}
-                  </div>
-                  <h3 className="font-medium text-sm md:text-base uppercase">{item.title}</h3>
-                </div>
-                <p className="text-xs md:text-sm text-muted-foreground mt-2 uppercase">
-                  {item.description}
-                </p>
-
-                {item.size === "large" && (
-                  <div className="mt-auto pt-4 flex items-center justify-end">
-                    <span className="text-sm flex items-center gap-1">
-                      View <ArrowRight className="h-4 w-4" />
-                    </span>
-                  </div>
-                )}
-              </Link>
-            );
-          })}
-        </div>
+        <BentoGrid items={bentoItems} />
       </section>
     </div>
   );

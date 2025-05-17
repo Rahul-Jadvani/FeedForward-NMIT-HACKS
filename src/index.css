@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,28 +6,28 @@
 @layer base {
   :root {
     --background: 218 44% 12%; /* #101C2C dark background */
-    --foreground: 210 80% 80%; /* #99BDFF lighter blue */
+    --foreground: 0 0% 100%; /* Pure white for better contrast */
 
     --card: 0 0% 0% / 0.1; /* Transparent black */
-    --card-foreground: 210 80% 80%; /* #99BDFF */
+    --card-foreground: 0 0% 100%; /* Pure white */
 
     --popover: 0 0% 0% / 0.1; /* Transparent black */
-    --popover-foreground: 210 80% 80%; /* #99BDFF */
+    --popover-foreground: 0 0% 100%; /* Pure white */
 
     --primary: 145 100% 40%; /* #00CC52 (green) */
-    --primary-foreground: 144.9 80.4% 10%;
+    --primary-foreground: 0 0% 100%; /* Pure white */
 
     --secondary: 255 100% 70%; /* #6b5cff (purple) */
-    --secondary-foreground: 255 100% 98%;
+    --secondary-foreground: 0 0% 100%; /* Pure white */
 
     --muted: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --muted-foreground: 213 22% 75%;
+    --muted-foreground: 0 0% 100% / 0.7; /* Semi-transparent white */
 
     --accent: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --accent-foreground: 210 80% 80%; /* #99BDFF */
+    --accent-foreground: 0 0% 100%; /* Pure white */
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 60 9.1% 97.8%;
+    --destructive-foreground: 0 0% 100%; /* Pure white */
 
     --border: 213 22% 60% / 0.3; /* #6884CA with transparency */
     --input: 213 22% 60% / 0.3; /* #6884CA with transparency */
@@ -35,115 +36,116 @@
     --radius: 1.25rem; /* Pixel-style rounded corners */
   }
 
-  /* Keep existing theme variations but update them with our new color scheme */
+  /* Update light mode with better contrast */
   [data-theme='light'] {
     --background: 210 80% 98%; /* Very light blue */
     --foreground: 218 44% 12%; /* #101C2C */
-    --card: 0 0% 0% / 0.1; /* Transparent black */
+    --card: 0 0% 100% / 0.5; /* Semi-transparent white */
     --card-foreground: 218 44% 12%; /* #101C2C */
-    --popover: 0 0% 0% / 0.1; /* Transparent black */
+    --popover: 0 0% 100% / 0.9; /* Semi-transparent white */
     --popover-foreground: 218 44% 12%; /* #101C2C */
-    --primary: 145 100% 40%; /* #00CC52 */
-    --primary-foreground: 218 44% 12%; /* #101C2C */
-    --secondary: 255 100% 70%; /* #6b5cff */
-    --secondary-foreground: 218 44% 12%; /* #101C2C */
+    --primary: 145 100% 35%; /* Darker green for better contrast */
+    --primary-foreground: 0 0% 100%; /* Pure white */
+    --secondary: 255 100% 60%; /* Darker purple for better contrast */
+    --secondary-foreground: 0 0% 100%; /* Pure white */
     --muted: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --muted-foreground: 213 22% 45%;
+    --muted-foreground: 218 44% 20%; /* Darker for better contrast */
     --accent: 213 22% 60% / 0.2; /* #6884CA with transparency */
     --accent-foreground: 218 44% 12%; /* #101C2C */
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 60 9.1% 97.8%;
+    --destructive: 0 84.2% 50%; /* Darker red for better contrast */
+    --destructive-foreground: 0 0% 100%; /* Pure white */
     --border: 213 22% 60% / 0.3; /* #6884CA with transparency */
     --input: 213 22% 60% / 0.3; /* #6884CA with transparency */
-    --ring: 145 100% 40%; /* #00CC52 */
+    --ring: 145 100% 35%; /* Darker green for better contrast */
   }
 
+  /* Keep dark mode as default */
   [data-theme='dark'] {
     --background: 218 44% 12%; /* #101C2C */
-    --foreground: 210 80% 80%; /* #99BDFF */
-    --card: 0 0% 100% / 0.1; /* Transparent white */
-    --card-foreground: 210 80% 80%; /* #99BDFF */
-    --popover: 0 0% 100% / 0.1; /* Transparent white */
-    --popover-foreground: 210 80% 80%; /* #99BDFF */
+    --foreground: 0 0% 100%; /* Pure white */
+    --card: 0 0% 100% / 0.05; /* Very transparent white */
+    --card-foreground: 0 0% 100%; /* Pure white */
+    --popover: 0 0% 100% / 0.05; /* Very transparent white */
+    --popover-foreground: 0 0% 100%; /* Pure white */
     --primary: 145 100% 40%; /* #00CC52 */
-    --primary-foreground: 144.9 80.4% 10%;
+    --primary-foreground: 0 0% 100%; /* Pure white */
     --secondary: 255 100% 70%; /* #6b5cff */
-    --secondary-foreground: 255 100% 98%;
-    --muted: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --muted-foreground: 213 22% 75%;
-    --accent: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --accent-foreground: 210 80% 80%; /* #99BDFF */
+    --secondary-foreground: 0 0% 100%; /* Pure white */
+    --muted: 213 22% 60% / 0.15; /* #6884CA with transparency */
+    --muted-foreground: 0 0% 100% / 0.7; /* Semi-transparent white */
+    --accent: 213 22% 60% / 0.15; /* #6884CA with transparency */
+    --accent-foreground: 0 0% 100%; /* Pure white */
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 60 9.1% 97.8%;
-    --border: 213 22% 60% / 0.3; /* #6884CA with transparency */
-    --input: 213 22% 60% / 0.3; /* #6884CA with transparency */
+    --destructive-foreground: 0 0% 100%; /* Pure white */
+    --border: 213 22% 60% / 0.2; /* #6884CA with transparency */
+    --input: 213 22% 60% / 0.2; /* #6884CA with transparency */
     --ring: 145 100% 40%; /* #00CC52 */
   }
   
-  /* Keep other theme variations */
+  /* Keep other theme variations but update them with consistent color contrast */
   [data-theme='forest'] {
     --background: 218 44% 12%; /* #101C2C */
     --foreground: 145 100% 40%; /* #00CC52 */
-    --card: 0 0% 100% / 0.1; /* Transparent white */
+    --card: 0 0% 100% / 0.05; /* Very transparent white */
     --card-foreground: 145 100% 40%; /* #00CC52 */
-    --popover: 0 0% 100% / 0.1; /* Transparent white */
+    --popover: 0 0% 100% / 0.05; /* Very transparent white */
     --popover-foreground: 145 100% 40%; /* #00CC52 */
     --primary: 145 100% 40%; /* #00CC52 */
-    --primary-foreground: 218 44% 12%; /* #101C2C */
+    --primary-foreground: 0 0% 100%; /* Pure white */
     --secondary: 255 100% 70%; /* #6b5cff */
-    --secondary-foreground: 210 80% 80%; /* #99BDFF */
-    --muted: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --muted-foreground: 213 22% 75%;
-    --accent: 213 22% 60% / 0.2; /* #6884CA with transparency */
+    --secondary-foreground: 0 0% 100%; /* Pure white */
+    --muted: 213 22% 60% / 0.15; /* #6884CA with transparency */
+    --muted-foreground: 145 100% 60%; /* Lighter green */
+    --accent: 213 22% 60% / 0.15; /* #6884CA with transparency */
     --accent-foreground: 145 100% 40%; /* #00CC52 */
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 80% 80%; /* #99BDFF */
-    --border: 213 22% 60% / 0.3; /* #6884CA with transparency */
-    --input: 213 22% 60% / 0.3; /* #6884CA with transparency */
+    --destructive-foreground: 0 0% 100%; /* Pure white */
+    --border: 213 22% 60% / 0.2; /* #6884CA with transparency */
+    --input: 213 22% 60% / 0.2; /* #6884CA with transparency */
     --ring: 145 100% 40%; /* #00CC52 */
   }
 
   [data-theme='sunset'] {
     --background: 210 80% 98%; /* Very light blue */
     --foreground: 218 44% 12%; /* #101C2C */
-    --card: 0 0% 0% / 0.1; /* Transparent black */
+    --card: 0 0% 0% / 0.05; /* Very transparent black */
     --card-foreground: 218 44% 12%; /* #101C2C */
-    --popover: 0 0% 0% / 0.1; /* Transparent black */
+    --popover: 0 0% 0% / 0.05; /* Very transparent black */
     --popover-foreground: 218 44% 12%; /* #101C2C */
-    --primary: 145 100% 40%; /* #00CC52 */
-    --primary-foreground: 218 44% 12%; /* #101C2C */
-    --secondary: 255 100% 70%; /* #6b5cff */
-    --secondary-foreground: 218 44% 12%; /* #101C2C */
-    --muted: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --muted-foreground: 213 22% 45%;
-    --accent: 213 22% 60% / 0.2; /* #6884CA with transparency */
+    --primary: 145 100% 35%; /* Darker green for better contrast */
+    --primary-foreground: 0 0% 100%; /* Pure white */
+    --secondary: 255 100% 60%; /* Darker purple for better contrast */
+    --secondary-foreground: 0 0% 100%; /* Pure white */
+    --muted: 213 22% 60% / 0.15; /* #6884CA with transparency */
+    --muted-foreground: 218 44% 30%; /* Darker for better contrast */
+    --accent: 213 22% 60% / 0.15; /* #6884CA with transparency */
     --accent-foreground: 218 44% 12%; /* #101C2C */
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 60 9.1% 97.8%;
-    --border: 213 22% 60% / 0.3; /* #6884CA with transparency */
-    --input: 213 22% 60% / 0.3; /* #6884CA with transparency */
-    --ring: 145 100% 40%; /* #00CC52 */
+    --destructive: 0 84.2% 50%; /* Darker red for better contrast */
+    --destructive-foreground: 0 0% 100%; /* Pure white */
+    --border: 213 22% 60% / 0.2; /* #6884CA with transparency */
+    --input: 213 22% 60% / 0.2; /* #6884CA with transparency */
+    --ring: 145 100% 35%; /* Darker green for better contrast */
   }
 
   [data-theme='ocean'] {
     --background: 218 44% 12%; /* #101C2C */
-    --foreground: 210 80% 80%; /* #99BDFF */
-    --card: 0 0% 100% / 0.1; /* Transparent white */
-    --card-foreground: 210 80% 80%; /* #99BDFF */
-    --popover: 0 0% 100% / 0.1; /* Transparent white */
-    --popover-foreground: 210 80% 80%; /* #99BDFF */
+    --foreground: 0 0% 100%; /* Pure white */
+    --card: 0 0% 100% / 0.05; /* Very transparent white */
+    --card-foreground: 0 0% 100%; /* Pure white */
+    --popover: 0 0% 100% / 0.05; /* Very transparent white */
+    --popover-foreground: 0 0% 100%; /* Pure white */
     --primary: 145 100% 40%; /* #00CC52 */
-    --primary-foreground: 210 80% 80%; /* #99BDFF */
+    --primary-foreground: 0 0% 100%; /* Pure white */
     --secondary: 255 100% 70%; /* #6b5cff */
-    --secondary-foreground: 210 80% 80%; /* #99BDFF */
+    --secondary-foreground: 0 0% 100%; /* Pure white */
     --muted: 213 22% 40%; /* Darker version of #6884CA */
-    --muted-foreground: 213 22% 75%;
-    --accent: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --accent-foreground: 210 80% 80%; /* #99BDFF */
+    --muted-foreground: 0 0% 100% / 0.7; /* Semi-transparent white */
+    --accent: 213 22% 60% / 0.15; /* #6884CA with transparency */
+    --accent-foreground: 0 0% 100%; /* Pure white */
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 80% 80%; /* #99BDFF */
-    --border: 213 22% 60% / 0.3; /* #6884CA with transparency */
-    --input: 213 22% 60% / 0.3; /* #6884CA with transparency */
+    --destructive-foreground: 0 0% 100%; /* Pure white */
+    --border: 213 22% 60% / 0.2; /* #6884CA with transparency */
+    --input: 213 22% 60% / 0.2; /* #6884CA with transparency */
     --ring: 145 100% 40%; /* #00CC52 */
   }
 }
@@ -151,10 +153,11 @@
 @layer base {
   * {
     @apply border-border;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
   
   html, body {
-    @apply bg-black text-foreground;
+    @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     scroll-behavior: smooth;
   }
@@ -181,9 +184,10 @@
     @apply border border-border/50 rounded-full transition-all duration-300;
   }
   
-  /* Keep existing utility classes */
+  /* Update gradient text for better visibility */
   .gradient-text {
     @apply bg-gradient-to-r from-theme-green to-theme-purple bg-clip-text text-transparent;
+    text-shadow: 0 0 10px rgba(0, 204, 82, 0.2);
   }
   
   .btn-gradient {

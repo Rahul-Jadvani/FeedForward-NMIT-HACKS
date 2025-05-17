@@ -18,6 +18,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Space Grotesk', 'sans-serif'],
+        display: ['Rajdhani', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -103,6 +107,19 @@ export default {
           "0%": { transform: "scale(0)", opacity: "0.6" },
           "100%": { transform: "scale(4)", opacity: "0" }
         },
+        "spin": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" }
+        },
+        "bounce-in": {
+          "0%": { transform: "scale(0.8)", opacity: "0" },
+          "80%": { transform: "scale(1.05)" },
+          "100%": { transform: "scale(1)", opacity: "1" }
+        },
+        "slide-up-fade": {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -113,6 +130,9 @@ export default {
         "float": "float 3s ease-in-out infinite",
         "pulse-subtle": "pulse-subtle 2s ease-in-out infinite",
         "ripple": "ripple 0.6s linear",
+        "spin": "spin 1s linear infinite",
+        "bounce-in": "bounce-in 0.5s ease-out forwards",
+        "slide-up-fade": "slide-up-fade 0.4s ease-out forwards",
       },
       backdropFilter: {
         'none': 'none',
@@ -121,6 +141,7 @@ export default {
       boxShadow: {
         'pixel': '0 2px 8px rgba(0, 0, 0, 0.15)',
         'pixel-hover': '0 4px 12px rgba(0, 0, 0, 0.2)',
+        'glow': '0 0 10px rgba(0, 204, 82, 0.5)',
       },
     },
   },

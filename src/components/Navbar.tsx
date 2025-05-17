@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { ConnectWallet } from "./ConnectWallet";
-import { ThemeSwitcher } from "./ThemeSwitcher";
+import { ThemeToggle } from "./ThemeToggle";
 import { UserMenu } from "./nav/UserMenu";
 import { NotificationButton } from "./nav/NotificationButton";
 
@@ -17,12 +17,12 @@ export function Navbar() {
           to="/" 
           className="flex items-center space-x-2 transition-all duration-300 hover:scale-105"
         >
-          <span className="font-bold text-2xl gradient-text">FeedForward</span>
+          <span className="font-display font-bold text-2xl gradient-text">FeedForward</span>
         </Link>
 
         <div className="flex items-center gap-4">
           <ConnectWallet />
-          <ThemeSwitcher />
+          <ThemeToggle />
           <NotificationButton />
           
           {isAuthenticated ? (
