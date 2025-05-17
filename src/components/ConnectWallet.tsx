@@ -1,8 +1,14 @@
 
 import { Button } from "@/components/ui/button";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAccount, useBalance } from 'wagmi';
+import { useWeb3 } from "@/contexts/Web3Context";
+import { Coins } from "lucide-react";
 
 export function ConnectWallet() {
+  const { isConnected } = useAccount();
+  const { feedCoinBalance } = useWeb3();
+
   return (
     <ConnectButton.Custom>
       {({
@@ -60,6 +66,13 @@ export function ConnectWallet() {
                     {account.displayName}
                     {account.displayBalance ? ` (${account.displayBalance})` : ''}
                   </Button>
+                  
+                  {isConnected && (
+                    <div className="flex items-center gap-1 px-2 py-1 h-9 bg-amber-100/80 dark:bg-amber-900/50 rounded-full text-amber-800 dark:text-amber-200">
+                      <Coins className="h-4 w-4" />
+                      <span className="font-medium">{parseFloat(feedCoinBalance).toFixed(2)}</span>
+                    </div>
+                  )}
                 </div>
               );
             })()}

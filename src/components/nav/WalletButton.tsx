@@ -10,26 +10,26 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useWeb3 } from "@/contexts/Web3Context";
+import { useAccount } from "wagmi";
 
 export function WalletButton() {
   const { isAuthenticated } = useAuth();
-  const [feedCoins, setFeedCoins] = useState<number | null>(null);
+  const { isConnected } = useAccount();
+  const { feedCoinBalance } = useWeb3();
+  const [displayBalance, setDisplayBalance] = useState<number | null>(null);
   
-  // Simulate fetching wallet data - in a real app, this would connect to your backend
+  // Update display balance whenever feedCoinBalance changes
   useEffect(() => {
-    if (isAuthenticated) {
-      // This is a placeholder for actual wallet data fetching
-      // In a real implementation, you would fetch from your API/Supabase
-      const mockFetchWalletData = () => {
-        // Simulate wallet balance of FeedCoins
-        setFeedCoins(125);
-      };
-      
-      mockFetchWalletData();
+    if (isConnected && feedCoinBalance) {
+      setDisplayBalance(parseFloat(feedCoinBalance));
+    } else if (isAuthenticated) {
+      // If not connected to blockchain but authenticated in app, show mock balance
+      setDisplayBalance(125);
     } else {
-      setFeedCoins(null);
+      setDisplayBalance(null);
     }
-  }, [isAuthenticated]);
+  }, [isConnected, feedCoinBalance, isAuthenticated]);
   
   if (!isAuthenticated) {
     return null; // Don't show wallet button for unauthenticated users
@@ -47,17 +47,17 @@ export function WalletButton() {
           >
             <Link to="/wallet">
               <Wallet className="h-5 w-5" />
-              {feedCoins !== null && (
+              {displayBalance !== null && (
                 <div className="absolute -bottom-1 -right-1 bg-ff-green text-white rounded-full h-4 px-1 text-[10px] flex items-center justify-center font-medium animate-fade-in">
                   <Coins className="h-2 w-2 mr-0.5" />
-                  {feedCoins}
+                  {displayBalance}
                 </div>
               )}
             </Link>
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Wallet: {feedCoins} FeedCoins</p>
+          <p>Wallet: {displayBalance} FeedCoins</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

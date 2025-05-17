@@ -8,12 +8,18 @@ import { UserMenu } from "./nav/UserMenu";
 import { NotificationButton } from "./nav/NotificationButton";
 import { Coins } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useWeb3 } from "@/contexts/Web3Context";
+import { useAccount } from "wagmi";
 
 export function Navbar() {
   const { isAuthenticated } = useAuth();
+  const { isConnected } = useAccount();
+  const { feedCoinBalance } = useWeb3();
   
-  // Mock FeedCoin balance - in a real app this would come from your user context
-  const feedCoinBalance = 125;
+  // Use real feedCoin balance if connected to blockchain, otherwise fallback to mock data
+  const feedCoinBalanceDisplay = isConnected ? 
+    parseFloat(feedCoinBalance).toFixed(2) : 
+    "125";
 
   return (
     <header className="sticky top-0 z-40 w-full bg-transparent backdrop-blur-sm border-b border-border/40">
@@ -32,7 +38,7 @@ export function Navbar() {
                 <TooltipTrigger asChild>
                   <Link to="/wallet" className="flex items-center gap-1 bg-amber-100/80 dark:bg-amber-900/50 px-3 py-1 rounded-full text-amber-800 dark:text-amber-200">
                     <Coins className="h-4 w-4" />
-                    <span className="font-medium">{feedCoinBalance}</span>
+                    <span className="font-medium">{feedCoinBalanceDisplay}</span>
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent>

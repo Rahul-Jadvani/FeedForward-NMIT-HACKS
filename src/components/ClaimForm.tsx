@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -30,6 +29,8 @@ import { FoodFlag } from "./FoodFlagCard";
 import { Check, Info, Coins, AlertTriangle } from "lucide-react";
 import { ClaimSuccess } from "./ClaimSuccess";
 import { StakingForm } from "./StakingForm";
+import { useWeb3 } from "@/contexts/Web3Context";
+import { useAccount } from "wagmi";
 
 const claimFormSchema = z.object({
   fullName: z.string().min(2, { message: "Name must be at least 2 characters" }),
@@ -61,6 +62,9 @@ export function ClaimForm({ foodFlag, open, onOpenChange, onSuccess }: ClaimForm
   const [stakedAmount, setStakedAmount] = useState(0);
   const [showStakingForm, setShowStakingForm] = useState(true);
   
+  const { isConnected } = useAccount();
+  const { feedCoinBalance, donate } = useWeb3();
+  
   const form = useForm<ClaimFormValues>({
     resolver: zodResolver(claimFormSchema),
     defaultValues: {
@@ -90,6 +94,13 @@ export function ClaimForm({ foodFlag, open, onOpenChange, onSuccess }: ClaimForm
       console.log("Form values submitted:", values);
       console.log("For food flag:", foodFlag.id);
       console.log("Staked amount:", stakedAmount);
+      
+      // If connected to blockchain, call the donate function
+      if (isConnected && foodFlag.organizationAddress) {
+        // Assuming the foodFlag.organizationAddress is the NGO address
+        // and we're donating a small amount for the food claim
+        await donate(foodFlag.organizationAddress, "0.001");
+      }
       
       // Simulate API call with timeout
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -134,6 +145,9 @@ export function ClaimForm({ foodFlag, open, onOpenChange, onSuccess }: ClaimForm
     });
   };
 
+  // Check if wallet is connected and has enough balance for staking
+  const canStake = isConnected && parseFloat(feedCoinBalance) >= 5;
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -147,6 +161,34 @@ export function ClaimForm({ foodFlag, open, onOpenChange, onSuccess }: ClaimForm
           
           {showStakingForm && !hasStaked ? (
             <div className="py-4">
+              {!isConnected && (
+                <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg mb-6 flex items-start gap-3 border border-amber-200 dark:border-amber-700/30">
+                  <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-amber-700 dark:text-amber-300">
+                      Wallet not connected
+                    </p>
+                    <p className="text-sm text-amber-600 dark:text-amber-400">
+                      Connect your wallet to use real FeedCoin or continue with mock staking
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              {isConnected && !canStake && (
+                <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg mb-6 flex items-start gap-3 border border-amber-200 dark:border-amber-700/30">
+                  <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-amber-700 dark:text-amber-300">
+                      Insufficient FeedCoin balance
+                    </p>
+                    <p className="text-sm text-amber-600 dark:text-amber-400">
+                      You need at least 5 FeedCoin to stake for this claim
+                    </p>
+                  </div>
+                </div>
+              )}
+              
               <StakingForm formType="claim" onStakingComplete={handleStakingComplete} />
             </div>
           ) : (
