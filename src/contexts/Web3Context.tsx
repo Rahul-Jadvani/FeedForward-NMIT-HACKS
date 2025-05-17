@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useAccount, useBalance, useReadContract, useWriteContract, useConfig, useReadContracts } from 'wagmi';
 import { formatEther, parseEther } from 'viem';
@@ -196,12 +197,16 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      await writeContractAsync({
+      // Create a contract configuration object
+      const { request } = await config.publicClient.simulateContract({
         address: FEED_FORWARD_ADDRESS as `0x${string}`,
         abi: FEED_FORWARD_ABI,
         functionName: 'registerNGO',
         args: [name],
+        account: address,
       });
+      
+      await writeContractAsync(request);
       
       toast.success("NGO registration submitted successfully!");
       await fetchNGOData(address);
@@ -260,13 +265,17 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      await writeContractAsync({
+      // Create a contract configuration object
+      const { request } = await config.publicClient.simulateContract({
         address: FEED_FORWARD_ADDRESS as `0x${string}`,
         abi: FEED_FORWARD_ABI,
         functionName: 'donate',
         args: [ngoAddress as `0x${string}`],
+        account: address,
         value: parseEther(amount),
       });
+      
+      await writeContractAsync(request);
       
       toast.success("Donation successful!");
     } catch (error) {
@@ -286,11 +295,15 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      await writeContractAsync({
+      // Create a contract configuration object
+      const { request } = await config.publicClient.simulateContract({
         address: DONATION_NFT_ADDRESS as `0x${string}`,
         abi: DONATION_NFT_ABI,
         functionName: 'claimNFT',
+        account: address,
       });
+      
+      await writeContractAsync(request);
       
       toast.success("NFT claim submitted!");
       await fetchNFTs();
@@ -311,11 +324,15 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      await writeContractAsync({
+      // Create a contract configuration object
+      const { request } = await config.publicClient.simulateContract({
         address: FEED_COIN_ADDRESS as `0x${string}`,
         abi: FEED_COIN_ABI,
         functionName: 'claimTokens',
+        account: address,
       });
+      
+      await writeContractAsync(request);
       
       toast.success("Tokens claim submitted!");
     } catch (error) {
