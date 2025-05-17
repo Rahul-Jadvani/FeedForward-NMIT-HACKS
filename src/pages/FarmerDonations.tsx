@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -105,7 +104,6 @@ export default function FarmerDonations() {
     toast({
       title: "Staking Successful",
       description: `You've staked ${amount} FeedCoin for this donation`,
-      icon: <Coins className="h-4 w-4" />,
     });
   };
 
