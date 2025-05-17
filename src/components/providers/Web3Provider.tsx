@@ -1,6 +1,6 @@
 
 import { RainbowKitProvider, getDefaultWallets } from '@rainbow-me/rainbowkit';
-import { http, createConfig, WagmiProvider, Chain } from 'wagmi';
+import { http, createConfig, WagmiProvider } from 'wagmi';
 import { mainnet, polygon, base, baseSepolia } from 'wagmi/chains';
 import '@rainbow-me/rainbowkit/styles.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';

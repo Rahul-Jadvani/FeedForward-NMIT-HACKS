@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -97,9 +98,11 @@ export function ClaimForm({ foodFlag, open, onOpenChange, onSuccess }: ClaimForm
       
       // If connected to blockchain, call the donate function
       if (isConnected && foodFlag.organizationAddress) {
-        // Assuming the foodFlag.organizationAddress is the NGO address
-        // and we're donating a small amount for the food claim
+        // Only attempt donation if organization address exists
         await donate(foodFlag.organizationAddress, "0.001");
+      } else if (isConnected) {
+        // If connected but no organization address
+        console.log("No organization address available for donation");
       }
       
       // Simulate API call with timeout

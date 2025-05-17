@@ -147,10 +147,12 @@ export function Web3Provider({ children }: { children: ReactNode }) {
   const [ownedNFTs, setOwnedNFTs] = useState<NFT[]>([]);
   const [ethPrice, setEthPrice] = useState("0");
   
-  // Get ETH balance
+  // Get ETH balance - fixed the 'watch' property issue
   const { data: ethBalanceData } = useBalance({
     address,
-    watch: true,
+    query: {
+      enabled: !!address,
+    }
   });
 
   // Get FeedCoin balance
@@ -158,7 +160,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
     address: FEED_COIN_ADDRESS as `0x${string}`,
     abi: FEED_COIN_ABI,
     functionName: 'balanceOf',
-    args: [address as `0x${string}`],
+    args: address ? [address] : undefined,
     query: {
       enabled: !!address,
     },
@@ -175,7 +177,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
   });
 
   // Contract write hooks
-  const { writeContractAsync: writeFFContract } = useWriteContract();
+  const { writeContractAsync } = useWriteContract();
   
   // Effect to update ETH price
   useEffect(() => {
@@ -193,7 +195,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      await writeFFContract({
+      await writeContractAsync({
         address: FEED_FORWARD_ADDRESS as `0x${string}`,
         abi: FEED_FORWARD_ABI,
         functionName: 'registerNGO',
@@ -257,7 +259,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      await writeFFContract({
+      await writeContractAsync({
         address: FEED_FORWARD_ADDRESS as `0x${string}`,
         abi: FEED_FORWARD_ABI,
         functionName: 'donate',
@@ -283,7 +285,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      await writeFFContract({
+      await writeContractAsync({
         address: DONATION_NFT_ADDRESS as `0x${string}`,
         abi: DONATION_NFT_ABI,
         functionName: 'claimNFT',
@@ -308,7 +310,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      await writeFFContract({
+      await writeContractAsync({
         address: FEED_COIN_ADDRESS as `0x${string}`,
         abi: FEED_COIN_ABI,
         functionName: 'claimTokens',
@@ -360,31 +362,21 @@ export function Web3Provider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Prepare contract call utility function
+  // Prepare contract call utility function - simplified for the mock
   const readContract = async ({ address, abi, functionName, args = [] }: any) => {
-    return await fetch('https://base-sepolia.g.alchemy.com/v2/your-api-key', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        id: 1,
-        method: 'eth_call',
-        params: [{
-          to: address,
-          data: encodeCallData({ abi, functionName, args }),
-        }, 'latest'],
-      }),
-    }).then(res => res.json())
-      .then(json => {
-        if (json.error) throw new Error(json.error.message);
-        return json.result;
-      });
-  };
-
-  // Simplified ABI encoding function (you'd use viem for this in practice)
-  const encodeCallData = ({ abi, functionName, args }: any) => {
-    // Simplified implementation - in practice use viem's encodeFunctionData
-    return '0x...';
+    // This is a mock implementation for demonstration purposes
+    console.log(`Reading contract ${address} function ${functionName} with args:`, args);
+    
+    // Return mock data based on the function name
+    if (functionName === 'balanceOf') {
+      return BigInt(1000000000000000000); // Mock balance of 1 token
+    } else if (functionName === 'tokenURI') {
+      return `https://example.com/token/${args[0]}`; // Mock token URI
+    } else if (functionName === 'getNGO') {
+      return ["Mock NGO", args[0], true]; // Mock NGO data
+    } else {
+      return null;
+    }
   };
 
   // Initial data fetch

@@ -30,6 +30,7 @@ export interface FoodFlag {
   imageUrl: string;
   donorName: string;
   donorRating: number;
+  organizationAddress?: string; // Added this field as optional
   impact: {
     mealsProvided: number;
     co2Saved: number;
