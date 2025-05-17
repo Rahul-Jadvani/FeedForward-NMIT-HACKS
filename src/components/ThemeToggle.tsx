@@ -18,8 +18,9 @@ export function ThemeToggle() {
   const toggleTheme = () => {
     setIsRotating(true);
     setTimeout(() => {
-      setTheme(theme === 'dark' ? 'light' : 'dark');
-      toast.success(`${theme === 'dark' ? 'Light' : 'Dark'} mode activated!`);
+      const newTheme = theme === 'dark' ? 'light' : 'dark';
+      setTheme(newTheme);
+      toast.success(`${newTheme === 'light' ? 'Light' : 'Dark'} mode activated!`);
       setIsRotating(false);
     }, 300);
   };

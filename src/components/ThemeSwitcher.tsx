@@ -23,7 +23,8 @@ export function ThemeSwitcher() {
 
   const handleThemeChange = (newTheme: typeof themes[number]['value']) => {
     setTheme(newTheme);
-    toast.success(`${themes.find(t => t.value === newTheme)?.name} theme activated!`);
+    const selectedTheme = themes.find(t => t.value === newTheme);
+    toast.success(`${selectedTheme?.name} theme activated!`);
   };
 
   return (
