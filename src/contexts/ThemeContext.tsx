@@ -14,27 +14,37 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    // Always try to use stored theme first, but default to dark if none exists
-    const storedTheme = localStorage.getItem('theme');
-    return (storedTheme === 'light' ? 'light' : 'dark');
+    // Try to use stored theme first, but default to dark if none exists
+    if (typeof window !== 'undefined') {
+      const storedTheme = localStorage.getItem('theme');
+      return (storedTheme === 'light' ? 'light' : 'dark');
+    }
+    return 'dark'; // Default to dark theme
   });
   
   const [isEditingLayout, setIsEditingLayout] = useState<boolean>(false);
 
   useEffect(() => {
-    localStorage.setItem('theme', theme);
-    document.documentElement.setAttribute('data-theme', theme);
-    
-    // Apply dark class for dark theme
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme', theme);
+      document.documentElement.setAttribute('data-theme', theme);
+      
+      // Apply dark class for dark theme
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     }
   }, [theme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, isEditingLayout, setIsEditingLayout }}>
+    <ThemeContext.Provider value={{ 
+      theme, 
+      setTheme, 
+      isEditingLayout, 
+      setIsEditingLayout 
+    }}>
       {children}
     </ThemeContext.Provider>
   );

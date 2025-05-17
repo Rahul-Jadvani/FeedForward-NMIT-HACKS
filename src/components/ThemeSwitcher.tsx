@@ -10,20 +10,12 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 
-const themes = [
-  { name: 'Light', value: 'light', emoji: '☀️' },
-  { name: 'Dark', value: 'dark', emoji: '🌙' },
-] as const;
-
 export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
 
   const handleThemeChange = (newTheme: 'light' | 'dark') => {
     setTheme(newTheme);
-    const selectedTheme = themes.find(t => t.value === newTheme);
-    if (selectedTheme) {
-      toast.success(`${selectedTheme.name} theme activated!`);
-    }
+    toast.success(`${newTheme === 'light' ? 'Light' : 'Dark'} theme activated!`);
   };
 
   return (
@@ -35,16 +27,20 @@ export function ThemeSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="border border-border/50 shadow-lg animate-scale-in bg-background/90 backdrop-blur-md">
-        {themes.map((t) => (
-          <DropdownMenuItem
-            key={t.value}
-            onClick={() => handleThemeChange(t.value)}
-            className={`${theme === t.value ? 'bg-accent' : ''} cursor-pointer transition-colors hover:bg-accent/80 flex items-center gap-2`}
-          >
-            <span>{t.emoji}</span> {t.name}
-            {theme === t.value && <span className="ml-auto text-xs">✓</span>}
-          </DropdownMenuItem>
-        ))}
+        <DropdownMenuItem
+          onClick={() => handleThemeChange('light')}
+          className={`${theme === 'light' ? 'bg-accent' : ''} cursor-pointer transition-colors hover:bg-accent/80 flex items-center gap-2`}
+        >
+          <span>☀️</span> Light
+          {theme === 'light' && <span className="ml-auto text-xs">✓</span>}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handleThemeChange('dark')}
+          className={`${theme === 'dark' ? 'bg-accent' : ''} cursor-pointer transition-colors hover:bg-accent/80 flex items-center gap-2`}
+        >
+          <span>🌙</span> Dark
+          {theme === 'dark' && <span className="ml-auto text-xs">✓</span>}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
