@@ -108,21 +108,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (error) return { error };
       
-      // After successful login, create or update the user profile in the profiles table
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .upsert({
-            id: data.user.id,
-            full_name: data.user.user_metadata?.name || data.user.email?.split('@')[0] || '',
-            updated_at: new Date().toISOString(),
-          }, { onConflict: 'id' });
-          
-        if (profileError) {
-          console.error('Error updating profile:', profileError);
-        }
-      }
-      
+      // After successful login, don't try to update the profile here
+      // Let the onAuthStateChange handle the session update
       return { error: null };
     } catch (error) {
       return { error };
@@ -145,28 +132,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) return { error };
       
-      // After successful signup, create a profile entry
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            full_name: userData.name || email.split('@')[0],
-            username: email.split('@')[0],
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            preferences: {
-              notifications: true,
-              marketplaceAlerts: true,
-              emailUpdates: false
-            }
-          });
-          
-        if (profileError) {
-          console.error('Error creating profile:', profileError);
-        }
-      }
-      
+      // Let the trigger function handle profile creation
       return { error: null };
     } catch (error) {
       return { error };

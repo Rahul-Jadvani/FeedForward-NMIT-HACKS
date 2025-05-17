@@ -1,6 +1,6 @@
 
 import { Link, useLocation } from "react-router-dom";
-import { MapPin, Award, ShoppingBag, BarChart, Bot, FileCheck, Globe, Database, BarChart4, Tractor } from "lucide-react";
+import { MapPin, Award, ShoppingBag, BarChart, Bot, FileCheck, Globe, Database, BarChart4, Tractor, Sprout } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,7 @@ export const navItems: NavItem[] = [
   { title: "Home", href: "/" },
   { title: "Food Map", href: "/map", icon: <MapPin className="h-4 w-4" /> },
   { title: "Donate Food", href: "/donate" },
+  { title: "Farmer Donations", href: "/farmer-donations", icon: <Sprout className="h-4 w-4" />, badge: "New" },
   { title: "AI Inventory", href: "/ai-inventory", icon: <Database className="h-4 w-4" /> },
   { title: "Volunteer", href: "/volunteer", icon: <Award className="h-4 w-4" /> },
   { title: "Explore", href: "/explore", icon: <Globe className="h-4 w-4" /> },

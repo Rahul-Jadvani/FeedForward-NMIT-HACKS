@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Coins } from "lucide-react";
 import { StakingForm } from "@/components/StakingForm";
-import type { FarmerDonation } from "@/types/donations";
+import { FarmerDonation } from "@/types/supabase";
 
 export default function FarmerDonations() {
   const navigate = useNavigate();
@@ -49,17 +50,24 @@ export default function FarmerDonations() {
     setLoading(true);
 
     try {
+      // Carefully sanitize and prepare our data before sending it
+      const donationData = {
+        crop_name: formData.crop_name,
+        quantity: Number(formData.quantity) || 0,
+        unit: formData.unit,
+        market_price: formData.market_price ? Number(formData.market_price) : null,
+        reason: formData.reason || null,
+        location: formData.location,
+        pickup_date: formData.pickup_date || null,
+        user_id: user?.id,
+        staked_amount: stakedAmount,
+        contact_details: formData.contact_details,
+        status: 'pending'
+      };
+
       const { data, error } = await supabase
-        .from("farmer_donations")
-        .insert([
-          {
-            ...formData,
-            quantity: Number(formData.quantity),
-            market_price: formData.market_price ? Number(formData.market_price) : null,
-            user_id: user?.id,
-            staked_amount: stakedAmount,
-          },
-        ])
+        .from('farmer_donations')
+        .insert([donationData])
         .select();
 
       if (error) throw error;

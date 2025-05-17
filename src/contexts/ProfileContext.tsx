@@ -3,24 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-
-type Profile = {
-  id: string;
-  username: string | null;
-  full_name: string | null;
-  avatar_url: string | null;
-  bio: string | null;
-  location: string | null;
-  website: string | null;
-  preferences: {
-    theme?: string;
-    notifications?: boolean;
-    marketplaceAlerts?: boolean;
-    emailUpdates?: boolean;
-  };
-  updated_at: string | null;
-  created_at: string | null;
-};
+import { Profile } from "@/types/supabase";
 
 interface ProfileContextType {
   profile: Profile | null;
@@ -149,13 +132,16 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setUploading(true);
       
       // Create storage bucket if it doesn't exist yet (normally would be done via migrations)
-      const { error: createBucketError } = await supabase.storage.createBucket('avatars', {
-        public: true,
-        fileSizeLimit: 1024 * 1024 * 2, // 2MB
-      });
-      
-      if (createBucketError && !createBucketError.message.includes('already exists')) {
-        throw createBucketError;
+      try {
+        await supabase.storage.createBucket('avatars', {
+          public: true,
+          fileSizeLimit: 1024 * 1024 * 2, // 2MB
+        });
+      } catch (error: any) {
+        // Ignore error if bucket already exists
+        if (!error.message.includes('already exists')) {
+          throw error;
+        }
       }
 
       // Generate a unique file name
