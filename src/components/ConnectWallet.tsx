@@ -34,7 +34,7 @@ export function ConnectWallet() {
                   <Button
                     variant="gradient" 
                     size="sm"
-                    className="animate-pulse-glow shadow-ff-blue/30"
+                    className="animate-pulse-glow shadow-ff-blue/30 border border-ff-blue/30 backdrop-blur-sm"
                     onClick={openConnectModal}
                   >
                     Connect Wallet

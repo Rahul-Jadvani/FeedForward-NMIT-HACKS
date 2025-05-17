@@ -81,3 +81,94 @@ body {
     opacity: 0;
   }
 }
+
+/* Android 12 Inspired UI Elements */
+.gradient-text {
+  background: linear-gradient(90deg, #99BDFF, #6b5cff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.glass-card {
+  background: rgba(16, 28, 44, 0.25);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(104, 132, 202, 0.3);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: rgba(16, 28, 44, 0.35);
+  box-shadow: 0 8px 20px rgba(104, 132, 202, 0.15);
+}
+
+/* Bento Grid Layout */
+.bento-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.bento-item {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  background: rgba(16, 28, 44, 0.25);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(104, 132, 202, 0.2);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  height: 150px;
+}
+
+.bento-item:hover {
+  transform: translateY(-4px);
+  border-color: rgba(104, 132, 202, 0.6);
+  box-shadow: 0 8px 20px rgba(153, 189, 255, 0.15);
+}
+
+.bento-item-wide {
+  grid-column: span 2;
+}
+
+.bento-item-icon {
+  display: inline-flex;
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: rgba(153, 189, 255, 0.1);
+  margin-bottom: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.bento-item:hover .bento-item-icon {
+  background: rgba(153, 189, 255, 0.3);
+}
+
+/* Animation Effects */
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite alternate;
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 5px rgba(153, 189, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(153, 189, 255, 0.7);
+  }
+}
+
+/* Font styles */
+.font-futuristic {
+  font-family: 'Exo 2', 'Rajdhani', 'Orbitron', sans-serif;
+  letter-spacing: 0.03em;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .bento-item-wide {
+    grid-column: auto;
+  }
+}
