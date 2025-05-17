@@ -72,7 +72,7 @@ export function BentoGrid({ items }: BentoGridProps) {
     // First, sort by size to place larger items first
     newItems.sort((a, b) => {
       const sizeOrder = { large: 3, medium: 2, small: 1 };
-      return sizeOrder[b.size] - sizeOrder[a.size];
+      return sizeOrder[b.size as keyof typeof sizeOrder] - sizeOrder[a.size as keyof typeof sizeOrder];
     });
     
     setGridItems(newItems);
@@ -84,15 +84,25 @@ export function BentoGrid({ items }: BentoGridProps) {
     // Clone the array to avoid mutating the state directly
     const newItems = [...gridItems];
     
-    // Fisher-Yates shuffle algorithm
+    // Fisher-Yates shuffle algorithm - enhanced to be more random
     for (let i = newItems.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
+      // Generate a more random index by using crypto if available
+      const getRandomIndex = () => {
+        if (window.crypto && window.crypto.getRandomValues) {
+          const randomBuffer = new Uint32Array(1);
+          window.crypto.getRandomValues(randomBuffer);
+          return randomBuffer[0] % (i + 1);
+        }
+        return Math.floor(Math.random() * (i + 1));
+      };
+      
+      const j = getRandomIndex();
       [newItems[i], newItems[j]] = [newItems[j], newItems[i]];
     }
     
     setTimeout(() => {
-      // After shuffling, optimize layout to avoid empty spaces
-      optimizeLayout(newItems);
+      // Set the shuffled items without optimizing - true random shuffle
+      setGridItems(newItems);
       setAnimatingItems(false);
       toast.success("Items shuffled successfully!", {
         icon: <Shuffle className="h-4 w-4" />
@@ -128,38 +138,38 @@ export function BentoGrid({ items }: BentoGridProps) {
     }, 300);
   };
   
-  // Function to get color class based on theme and index
+  // Function to get color class based on theme and index - Updated with more vibrant Google-like colors
   const getItemColorClass = (index: number) => {
-    // Light mode colors matching your image
+    // Bright and lively colors for light mode (Google-inspired)
     const lightModeColors = [
-      "bg-pink-100/70", // pink
-      "bg-teal-100/70", // mint
-      "bg-amber-100/70", // yellow
-      "bg-blue-100/70", // light blue
-      "bg-purple-100/70", // light purple
-      "bg-green-100/70", // light green
-      "bg-orange-100/80", // light orange
-      "bg-indigo-100/70", // light indigo
-      "bg-rose-100/70", // light rose
-      "bg-emerald-100/70", // light emerald
-      "bg-violet-100/70", // light violet
-      "bg-sky-100/70", // light sky
+      "bg-[#F97316]/70", // Bright Orange
+      "bg-[#33C3F0]/70", // Sky Blue
+      "bg-[#1EAEDB]/70", // Bright Blue
+      "bg-[#D946EF]/70", // Magenta Pink
+      "bg-[#8B5CF6]/70", // Vivid Purple
+      "bg-[#F2FCE2]", // Soft Green
+      "bg-[#FEF7CD]", // Soft Yellow
+      "bg-[#FFDEE2]", // Soft Pink
+      "bg-[#D3E4FD]", // Soft Blue
+      "bg-amber-200", // Light Amber
+      "bg-emerald-200", // Light Emerald
+      "bg-cyan-200", // Light Cyan
     ];
     
-    // Dark mode colors for dark theme
+    // Dark mode vibrant colors with gradient backgrounds
     const darkModeColors = [
-      "bg-gradient-to-br from-pink-500/20 to-purple-600/20",
-      "bg-gradient-to-br from-green-500/20 to-teal-600/20",
-      "bg-gradient-to-br from-amber-500/20 to-orange-600/20",
-      "bg-gradient-to-br from-blue-500/20 to-indigo-600/20",
-      "bg-gradient-to-br from-purple-500/20 to-violet-600/20",
-      "bg-gradient-to-br from-emerald-500/20 to-green-600/20",
-      "bg-gradient-to-br from-rose-500/20 to-red-600/20",
-      "bg-gradient-to-br from-indigo-500/20 to-blue-600/20",
-      "bg-gradient-to-br from-yellow-500/20 to-amber-600/20",
-      "bg-gradient-to-br from-teal-500/20 to-cyan-600/20",
-      "bg-gradient-to-br from-violet-500/20 to-purple-600/20",
-      "bg-gradient-to-br from-orange-500/20 to-red-600/20",
+      "bg-gradient-to-br from-pink-500/30 to-purple-600/30",
+      "bg-gradient-to-br from-blue-500/30 to-teal-400/30",
+      "bg-gradient-to-br from-orange-400/30 to-amber-500/30",
+      "bg-gradient-to-br from-indigo-500/30 to-blue-400/30",
+      "bg-gradient-to-br from-violet-500/30 to-purple-400/30",
+      "bg-gradient-to-br from-green-400/30 to-emerald-500/30",
+      "bg-gradient-to-br from-rose-400/30 to-pink-500/30",
+      "bg-gradient-to-br from-cyan-500/30 to-blue-400/30",
+      "bg-gradient-to-br from-yellow-400/30 to-amber-500/30",
+      "bg-gradient-to-br from-teal-400/30 to-green-500/30",
+      "bg-gradient-to-br from-fuchsia-500/30 to-pink-600/30",
+      "bg-gradient-to-br from-amber-400/30 to-orange-500/30",
     ];
     
     return theme === 'dark' ? darkModeColors[index % darkModeColors.length] : lightModeColors[index % lightModeColors.length];

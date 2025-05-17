@@ -148,6 +148,13 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen">
+      {/* Welcome Message */}
+      <div className="container mx-auto px-4 pt-6 text-center animate-fade-in">
+        <h2 className="text-2xl md:text-3xl font-display font-bold gradient-text bg-gradient-to-r from-theme-green via-theme-purple to-theme-green">
+          Welcome to Feed Forward
+        </h2>
+      </div>
+      
       {/* Hero Section */}
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-ff-green/10 to-ff-orange/10 -z-10" />
@@ -160,6 +167,9 @@ export default function Home() {
             <p className="text-lg md:text-xl text-muted-foreground max-w-lg animate-fade-in text-white/90" style={{animationDelay: "0.2s"}}>
               Connect surplus food with those in need while earning rewards for your positive impact on the community and environment.
             </p>
+            <blockquote className="border-l-4 border-theme-green pl-4 italic text-xl animate-fade-in" style={{animationDelay: "0.3s"}}>
+              "The food you throw away could be the meal someone prayed for."
+            </blockquote>
             <div className="flex flex-wrap gap-4 pt-4 animate-fade-in" style={{animationDelay: "0.4s"}}>
               <Button asChild className="btn-gradient" size="lg">
                 <Link to="/donate">Donate Food</Link>

@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, Coins } from "lucide-react";
+import { StakingForm } from "@/components/StakingForm";
 import type { FarmerDonation } from "@/types/donations";
 
 export default function FarmerDonations() {
@@ -17,6 +18,8 @@ export default function FarmerDonations() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [donations, setDonations] = useState<FarmerDonation[]>([]);
+  const [hasStaked, setHasStaked] = useState(false);
+  const [stakedAmount, setStakedAmount] = useState(0);
 
   const [formData, setFormData] = useState({
     crop_name: "",
@@ -34,6 +37,16 @@ export default function FarmerDonations() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!hasStaked) {
+      toast({
+        title: "Staking Required",
+        description: "You must stake FeedCoin to submit this donation.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -45,6 +58,7 @@ export default function FarmerDonations() {
             quantity: Number(formData.quantity),
             market_price: formData.market_price ? Number(formData.market_price) : null,
             user_id: user?.id,
+            staked_amount: stakedAmount,
           },
         ])
         .select();
@@ -70,6 +84,9 @@ export default function FarmerDonations() {
           email: user?.email || "",
         },
       });
+      
+      setHasStaked(false);
+      setStakedAmount(0);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -81,10 +98,41 @@ export default function FarmerDonations() {
     }
   };
 
+  const handleStakingComplete = (amount: number) => {
+    setHasStaked(true);
+    setStakedAmount(amount);
+    
+    toast({
+      title: "Staking Successful",
+      description: `You've staked ${amount} FeedCoin for this donation`,
+      icon: <Coins className="h-4 w-4" />,
+    });
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Donate Excess Crops</h1>
+        
+        {!hasStaked && (
+          <div className="mb-8">
+            <StakingForm formType="donation" onStakingComplete={handleStakingComplete} />
+          </div>
+        )}
+        
+        {hasStaked && (
+          <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg mb-8 flex items-start gap-3 border border-amber-200 dark:border-amber-700/30">
+            <Coins className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium text-amber-700 dark:text-amber-300">
+                You've staked {stakedAmount} FeedCoin
+              </p>
+              <p className="text-sm text-amber-600 dark:text-amber-400">
+                Your stake will be returned upon successful donation handover
+              </p>
+            </div>
+          </div>
+        )}
 
         <Card>
           <CardHeader>
@@ -183,9 +231,17 @@ export default function FarmerDonations() {
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button 
+                type="submit" 
+                className={hasStaked ? "w-full btn-gradient" : "w-full bg-muted text-muted-foreground"}
+                disabled={loading || !hasStaked}
+              >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Submit Donation
+                {!hasStaked ? (
+                  <>Stake FeedCoin Required</>
+                ) : (
+                  <>Submit Donation</>
+                )}
               </Button>
             </form>
           </CardContent>

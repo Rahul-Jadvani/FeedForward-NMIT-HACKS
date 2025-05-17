@@ -2,7 +2,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "react-router-dom";
-import { Home, MapPin, Heart, BarChart, ChevronLeft, ChevronRight, Info, Users, User, Database, Globe, Bot, FileCheck, BarChart4, ShoppingCart, AlertTriangle } from "lucide-react";
+import { Home, MapPin, Heart, BarChart, ChevronLeft, ChevronRight, Info, Users, User, Database, Globe, Bot, FileCheck, BarChart4, ShoppingCart, AlertTriangle, Coins } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -19,6 +19,7 @@ const menuItems = [
   { icon: AlertTriangle, label: "Sanjeevani", to: "/sanjeevani", special: true },
   { icon: ShoppingCart, label: "Eco-Marketplace", to: "/eco-marketplace" },
   { icon: BarChart4, label: "CSR Dashboard", to: "/csr-dashboard" },
+  { icon: Coins, label: "FeedCoin Wallet", to: "/wallet" },
   { icon: User, label: "Profile", to: "/profile" },
   { icon: Info, label: "About", to: "/about" },
 ];

@@ -6,9 +6,14 @@ import { ConnectWallet } from "./ConnectWallet";
 import { ThemeToggle } from "./ThemeToggle";
 import { UserMenu } from "./nav/UserMenu";
 import { NotificationButton } from "./nav/NotificationButton";
+import { Coins } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function Navbar() {
   const { isAuthenticated } = useAuth();
+  
+  // Mock FeedCoin balance - in a real app this would come from your user context
+  const feedCoinBalance = 125;
 
   return (
     <header className="sticky top-0 z-40 w-full bg-transparent backdrop-blur-sm border-b border-border/40">
@@ -21,6 +26,22 @@ export function Navbar() {
         </Link>
 
         <div className="flex items-center gap-4">
+          {isAuthenticated && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link to="/wallet" className="flex items-center gap-1 bg-amber-100/80 dark:bg-amber-900/50 px-3 py-1 rounded-full text-amber-800 dark:text-amber-200">
+                    <Coins className="h-4 w-4" />
+                    <span className="font-medium">{feedCoinBalance}</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>FeedCoin Balance</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+          
           <ConnectWallet />
           <ThemeToggle />
           <NotificationButton />
