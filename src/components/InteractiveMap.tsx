@@ -6,6 +6,7 @@ import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine";
+import "../types/leaflet-extensions";
 
 // Define our interfaces
 interface FoodFlag {
@@ -159,7 +160,9 @@ const InteractiveMap = ({ foodFlags, onFoodFlagClick }: InteractiveMapProps) => 
     }).addTo(newMap);
     
     // Add custom geolocation button
-    const geoButton = L.control({ position: 'bottomright' });
+    const geoButton = L.control({
+      position: 'bottomright'
+    });
     geoButton.onAdd = function() {
       const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
       div.innerHTML = `<a href="#" title="My location" role="button" aria-label="My location" class="bg-white hover:bg-gray-100 flex items-center justify-center w-[30px] h-[30px]">

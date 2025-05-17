@@ -8,6 +8,7 @@ import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine";
 import { Input } from "@/components/ui/input";
 import { FormControl } from "@/components/ui/form";
+import "../types/leaflet-extensions";
 
 interface LocationPickerProps {
   value?: string;
@@ -175,8 +176,6 @@ const LocationPicker = ({ value, onChange }: LocationPickerProps) => {
       leafletScript.defer = true;
 
       leafletScript.onload = () => {
-        const L = window.L;
-
         // Load the Leaflet Routing Machine Plugin
         const routingScript = document.createElement("script");
         routingScript.src =

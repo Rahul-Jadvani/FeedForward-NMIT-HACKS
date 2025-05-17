@@ -1,5 +1,4 @@
 
-// Types for Leaflet extensions
 import L from "leaflet";
 
 declare global {
@@ -7,8 +6,8 @@ declare global {
     L: typeof L & {
       Control: typeof L.Control & {
         Geocoder: {
-          Nominatim: any;
-          new(options?: L.Control.GeocoderOptions): L.Control.Geocoder;
+          Nominatim: new () => any;
+          new(options?: any): any;
         }
       },
       Routing: {
@@ -30,7 +29,11 @@ declare module "leaflet" {
       on(type: string, fn: (e: any) => void): this;
       markGeocode(result: any): void;
     }
-    
-    function geocoder(options?: GeocoderOptions): Geocoder;
+  }
+  
+  namespace Routing {
+    function control(options: any): any;
   }
 }
+
+export {};
