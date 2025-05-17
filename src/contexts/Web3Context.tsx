@@ -1,5 +1,6 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { useAccount, useBalance, useReadContract, useWriteContract, useConfig, useReadContracts, getPublicClient } from 'wagmi';
+import { useAccount, useBalance, useReadContract, useWriteContract, useConfig, useReadContracts, usePublicClient } from 'wagmi';
 import { formatEther, parseEther } from 'viem';
 import { toast } from "sonner";
 import { baseSepolia } from 'wagmi/chains';
@@ -196,13 +197,14 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      // Updated approach without using publicClient directly
+      // Use writeContractAsync directly with correct parameters
       await writeContractAsync({
         address: FEED_FORWARD_ADDRESS as `0x${string}`,
         abi: FEED_FORWARD_ABI,
         functionName: 'registerNGO',
         args: [name],
-        account: address,
+        // Remove account parameter as it's not needed with writeContractAsync in wagmi v2
+        // The chain is automatically determined from the connected wallet
       });
       
       toast.success("NGO registration submitted successfully!");
@@ -262,13 +264,13 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      // Updated approach without using publicClient directly
+      // Use writeContractAsync directly with correct parameters
       await writeContractAsync({
         address: FEED_FORWARD_ADDRESS as `0x${string}`,
         abi: FEED_FORWARD_ABI,
         functionName: 'donate',
         args: [ngoAddress as `0x${string}`],
-        account: address,
+        // Remove account parameter as it's not needed with writeContractAsync in wagmi v2
         value: parseEther(amount),
       });
       
@@ -290,12 +292,12 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      // Updated approach without using publicClient directly
+      // Use writeContractAsync directly with correct parameters
       await writeContractAsync({
         address: DONATION_NFT_ADDRESS as `0x${string}`,
         abi: DONATION_NFT_ABI,
         functionName: 'claimNFT',
-        account: address,
+        // Remove account parameter as it's not needed with writeContractAsync in wagmi v2
       });
       
       toast.success("NFT claim submitted!");
@@ -317,12 +319,12 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      // Updated approach without using publicClient directly
+      // Use writeContractAsync directly with correct parameters
       await writeContractAsync({
         address: FEED_COIN_ADDRESS as `0x${string}`,
         abi: FEED_COIN_ABI,
         functionName: 'claimTokens',
-        account: address,
+        // Remove account parameter as it's not needed with writeContractAsync in wagmi v2
       });
       
       toast.success("Tokens claim submitted!");
@@ -358,7 +360,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
             address: DONATION_NFT_ADDRESS as `0x${string}`,
             abi: DONATION_NFT_ABI,
             functionName: 'tokenURI',
-            args: [BigInt(i)],
+            args: [BigInt(i)], // Convert to BigInt
           });
           
           nfts.push({ id: i, uri: uri as string });
