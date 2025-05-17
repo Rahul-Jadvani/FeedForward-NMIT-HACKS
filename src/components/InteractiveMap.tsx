@@ -6,8 +6,8 @@ import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine";
-import "@/types/leaflet-extensions";
 
+// Define our interfaces
 interface FoodFlag {
   id: string;
   title: string;
@@ -215,8 +215,6 @@ const InteractiveMap = ({ foodFlags, onFoodFlagClick }: InteractiveMapProps) => 
       leafletScript.defer = true;
 
       leafletScript.onload = () => {
-        const L = window.L;
-
         // Load the Leaflet Routing Machine Plugin
         const routingScript = document.createElement("script");
         routingScript.src =
