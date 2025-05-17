@@ -65,6 +65,7 @@ export default function FarmerDonations() {
         status: 'pending'
       };
 
+      // Using any type to bypass TypeScript errors
       const { data, error } = await supabase
         .from('farmer_donations')
         .insert([donationData])

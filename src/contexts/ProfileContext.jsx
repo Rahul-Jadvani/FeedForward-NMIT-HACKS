@@ -3,19 +3,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Profile } from "@/types/supabase";
 
-interface ProfileContextType {
-  profile: Profile | null;
-  loading: boolean;
-  error: Error | null;
-  updateProfile: (updates: Partial<Profile>) => Promise<void>;
-  refreshProfile: () => Promise<void>;
-  uploading: boolean;
-  uploadAvatar: (file: File) => Promise<string | null>;
-}
-
-const ProfileContext = createContext<ProfileContextType>({
+const ProfileContext = createContext({
   profile: null,
   loading: true,
   error: null,
@@ -27,12 +16,12 @@ const ProfileContext = createContext<ProfileContextType>({
 
 export const useProfile = () => useContext(ProfileContext);
 
-export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ProfileProvider = ({ children }) => {
   const { user, isAuthenticated } = useAuth();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [uploading, setUploading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState(null);
 
   const fetchProfile = async () => {
     try {
@@ -75,10 +64,10 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
         setProfile({
           ...data,
-          preferences: parsedPreferences as Profile['preferences']
+          preferences: parsedPreferences
         });
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error fetching profile:', err);
       setError(err);
       toast.error("Failed to load profile");
@@ -87,7 +76,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
-  const updateProfile = async (updates: Partial<Profile>) => {
+  const updateProfile = async (updates) => {
     try {
       if (!user) {
         throw new Error("User not authenticated");
@@ -105,7 +94,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       // Update local state on success
       setProfile((prevProfile) => prevProfile ? { ...prevProfile, ...updates } : null);
       toast.success("Profile updated successfully");
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error updating profile:', err);
       toast.error("Failed to update profile");
       throw err;
@@ -125,7 +114,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, [isAuthenticated, user?.id]);
 
-  const uploadAvatar = async (file: File): Promise<string | null> => {
+  const uploadAvatar = async (file) => {
     try {
       if (!user) throw new Error("User not authenticated");
       
@@ -137,7 +126,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
           public: true,
           fileSizeLimit: 1024 * 1024 * 2, // 2MB
         });
-      } catch (error: any) {
+      } catch (error) {
         // Ignore error if bucket already exists
         if (!error.message.includes('already exists')) {
           throw error;
@@ -169,7 +158,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
 
       return avatarUrl;
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error uploading avatar:', err);
       toast.error("Failed to upload avatar");
       return null;
@@ -192,3 +181,5 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     </ProfileContext.Provider>
   );
 };
+
+export default ProfileProvider;

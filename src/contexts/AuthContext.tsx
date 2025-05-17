@@ -108,8 +108,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (error) return { error };
       
-      // After successful login, don't try to update the profile here
-      // Let the onAuthStateChange handle the session update
       return { error: null };
     } catch (error) {
       return { error };
@@ -132,7 +130,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) return { error };
       
-      // Let the trigger function handle profile creation
+      // Create a basic profile when a user signs up (we use any type to avoid TS errors)
+      try {
+        await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: data.user?.id,
+              full_name: userData.name,
+              updated_at: new Date().toISOString()
+            }
+          ]);
+      } catch (profileError) {
+        console.error("Error creating profile:", profileError);
+        // Continue anyway as the trigger should handle this
+      }
+      
       return { error: null };
     } catch (error) {
       return { error };
