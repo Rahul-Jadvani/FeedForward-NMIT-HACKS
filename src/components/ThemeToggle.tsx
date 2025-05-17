@@ -25,7 +25,9 @@ export function ThemeToggle() {
     }, 300);
   };
 
-  if (!isMounted) return null;
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <Button

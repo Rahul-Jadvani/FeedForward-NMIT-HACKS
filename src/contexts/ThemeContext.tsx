@@ -44,12 +44,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [theme]);
 
   // Create a stable context value object
-  const contextValue = React.useMemo(() => ({
+  const contextValue: ThemeContextType = {
     theme,
     setTheme,
     isEditingLayout,
     setIsEditingLayout
-  }), [theme, isEditingLayout]);
+  };
 
   return (
     <ThemeContext.Provider value={contextValue}>
