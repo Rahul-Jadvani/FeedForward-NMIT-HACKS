@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ export default function Login() {
       const { error } = await login(email, password);
       
       if (error) {
+        console.error("Login error:", error);
         toast.error("Login failed", {
           description: error.message || "Please check your credentials and try again."
         });
@@ -42,6 +44,7 @@ export default function Login() {
         navigate(from);
       }
     } catch (error: any) {
+      console.error("Unexpected login error:", error);
       toast.error("Login failed", {
         description: "An unexpected error occurred. Please try again."
       });

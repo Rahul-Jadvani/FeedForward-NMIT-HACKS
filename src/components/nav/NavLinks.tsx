@@ -32,6 +32,12 @@ export const navItems: NavItem[] = [
     icon: <Bot className="h-4 w-4" />,
     badge: "AI"
   },
+  {
+    title: "FarmFeed",
+    href: "/farmfeed",
+    icon: <Tractor className="h-4 w-4" />,
+    badge: "New"
+  },
   { 
     title: "AI Verification", 
     href: "/ai-order-verification", 

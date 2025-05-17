@@ -76,6 +76,7 @@ export default function SignUp() {
       );
       
       if (error) {
+        console.error("Signup error:", error);
         toast.error("Sign up failed", {
           description: error.message || "Please check your information and try again."
         });
@@ -86,6 +87,7 @@ export default function SignUp() {
         navigate(from);
       }
     } catch (error: any) {
+      console.error("Unexpected signup error:", error);
       toast.error("Sign up failed", {
         description: "An unexpected error occurred. Please try again."
       });
