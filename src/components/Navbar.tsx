@@ -18,7 +18,7 @@ export function Navbar() {
           to="/" 
           className="flex items-center space-x-2 transition-all duration-300 hover:scale-105"
         >
-          <span className="font-display font-bold text-2xl gradient-text">FeedForward</span>
+          <span className="font-display font-bold text-2xl gradient-text bg-gradient-to-r from-theme-green via-theme-purple to-theme-green bg-[length:200%_auto] animate-gradient">FeedForward</span>
         </Link>
 
         <div className="flex items-center gap-4">

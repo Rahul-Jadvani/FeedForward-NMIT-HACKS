@@ -5,69 +5,45 @@
 
 @layer base {
   :root {
-    --background: 218 44% 12%; /* #101C2C dark background */
-    --foreground: 0 0% 100%; /* Pure white for better contrast */
+    --background: 218 44% 94%; /* Light blue background for light mode */
+    --foreground: 218 44% 12%; /* #101C2C for dark text in light mode */
 
-    --card: 0 0% 0% / 0.1; /* Transparent black */
-    --card-foreground: 0 0% 100%; /* Pure white */
+    --card: 0 0% 100% / 0.8; /* Semi-transparent white for cards */
+    --card-foreground: 218 44% 12%; /* #101C2C for card text */
 
-    --popover: 0 0% 0% / 0.1; /* Transparent black */
-    --popover-foreground: 0 0% 100%; /* Pure white */
+    --popover: 0 0% 100% / 0.9; /* Semi-transparent white for popovers */
+    --popover-foreground: 218 44% 12%; /* #101C2C for popover text */
 
-    --primary: 145 100% 40%; /* #00CC52 (green) */
-    --primary-foreground: 0 0% 100%; /* Pure white */
+    --primary: 218 44% 12%; /* #101C2C as primary */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
 
-    --secondary: 255 100% 70%; /* #6b5cff (purple) */
-    --secondary-foreground: 0 0% 100%; /* Pure white */
+    --secondary: 145 100% 40%; /* #00CC52 Green */
+    --secondary-foreground: 0 0% 100%; /* White text on secondary */
 
-    --muted: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --muted-foreground: 0 0% 100% / 0.7; /* Semi-transparent white */
+    --muted: 213 22% 80% / 0.5; /* Light muted color */
+    --muted-foreground: 218 44% 20%; /* Dark for better contrast */
 
-    --accent: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --accent-foreground: 0 0% 100%; /* Pure white */
+    --accent: 255 100% 70% / 0.7; /* #6B5CFF Purple with transparency */
+    --accent-foreground: 0 0% 100%; /* White text on accent */
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 100%; /* Pure white */
-
-    --border: 213 22% 60% / 0.3; /* #6884CA with transparency */
-    --input: 213 22% 60% / 0.3; /* #6884CA with transparency */
-    --ring: 145 100% 40%; /* #00CC52 */
-
-    --radius: 1.25rem; /* Pixel-style rounded corners */
-  }
-
-  /* Update light mode with better contrast using the specified color palette */
-  [data-theme='light'] {
-    --background: 210 80% 98%; /* Very light blue */
-    --foreground: 218 44% 12%; /* #101C2C */
-    
-    --card: 0 0% 100% / 0.5; /* Semi-transparent white */
-    --card-foreground: 218 44% 12%; /* #101C2C */
-    
-    --popover: 0 0% 100% / 0.9; /* Semi-transparent white */
-    --popover-foreground: 218 44% 12%; /* #101C2C */
-    
-    --primary: 145 100% 35%; /* #00CC52 slightly darker for better contrast */
-    --primary-foreground: 0 0% 100%; /* Pure white */
-    
-    --secondary: 255 100% 60%; /* #6b5cff slightly adjusted */
-    --secondary-foreground: 0 0% 100%; /* Pure white */
-    
-    --muted: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --muted-foreground: 218 44% 20%; /* Darker for better contrast */
-    
-    --accent: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --accent-foreground: 218 44% 12%; /* #101C2C */
-    
     --destructive: 0 84.2% 50%; /* Brighter red for better visibility */
-    --destructive-foreground: 0 0% 100%; /* Pure white */
+    --destructive-foreground: 0 0% 100%; /* White text on destructive */
+
+    --border: 213 22% 70% / 0.3; /* Light border */
+    --input: 213 22% 70% / 0.3; /* Light input */
+    --ring: 255 100% 70%; /* #6B5CFF Purple for ring */
+
+    --radius: 1.25rem; /* Rounded corners */
     
-    --border: 213 22% 60% / 0.3; /* #6884CA with transparency */
-    --input: 213 22% 60% / 0.3; /* #6884CA with transparency */
-    --ring: 145 100% 35%; /* Darker green for better contrast */
+    /* Custom theme colors */
+    --theme-blue: 213 100% 80%; /* #99BDFF */
+    --theme-green: 145 100% 40%; /* #00CC52 */
+    --theme-purple: 255 100% 70%; /* #6B5CFF */
+    --theme-dark: 218 44% 12%; /* #101C2C */
+    --theme-accent: 213 37% 60%; /* #6884CA */
   }
 
-  /* Dark mode with white text as requested */
+  /* Dark mode with white text */
   [data-theme='dark'] {
     --background: 218 44% 12%; /* #101C2C */
     --foreground: 0 0% 100%; /* Pure white */
@@ -81,7 +57,7 @@
     --primary: 145 100% 40%; /* #00CC52 */
     --primary-foreground: 0 0% 100%; /* Pure white */
     
-    --secondary: 255 100% 70%; /* #6b5cff */
+    --secondary: 255 100% 70%; /* #6B5CFF */
     --secondary-foreground: 0 0% 100%; /* Pure white */
     
     --muted: 213 22% 60% / 0.15; /* #6884CA with transparency */
@@ -103,91 +79,91 @@
     --background: 218 44% 12%; /* #101C2C */
     --foreground: 0 0% 100%; /* Pure white */
     
-    --card: 145 70% 60% / 0.1; /* Pastel green with transparency */
+    --card: 145 70% 60% / 0.15; /* Bright green with transparency */
     --card-foreground: 0 0% 100%; /* Pure white */
     
-    --popover: 145 70% 60% / 0.1; /* Pastel green with transparency */
+    --popover: 145 70% 60% / 0.15; /* Bright green with transparency */
     --popover-foreground: 0 0% 100%; /* Pure white */
     
     --primary: 145 100% 40%; /* #00CC52 */
     --primary-foreground: 0 0% 100%; /* Pure white */
     
-    --secondary: 255 100% 70%; /* #6b5cff */
+    --secondary: 255 100% 70%; /* #6B5CFF */
     --secondary-foreground: 0 0% 100%; /* Pure white */
     
-    --muted: 145 40% 60% / 0.15; /* Pastel green with transparency */
+    --muted: 145 40% 60% / 0.2; /* Vibrant green with transparency */
     --muted-foreground: 0 0% 100% / 0.7; /* Semi-transparent white */
     
-    --accent: 145 40% 60% / 0.15; /* Pastel green with transparency */
+    --accent: 145 40% 60% / 0.2; /* Vibrant green with transparency */
     --accent-foreground: 0 0% 100%; /* Pure white */
     
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%; /* Pure white */
     
-    --border: 145 40% 60% / 0.2; /* Pastel green with transparency */
-    --input: 145 40% 60% / 0.2; /* Pastel green with transparency */
+    --border: 145 40% 60% / 0.2; /* Vibrant green with transparency */
+    --input: 145 40% 60% / 0.2; /* Vibrant green with transparency */
     --ring: 145 100% 40%; /* #00CC52 */
   }
 
-  /* Sunset theme with pastel colors and white text */
+  /* Sunset theme with vibrant colors and white text */
   [data-theme='sunset'] {
     --background: 218 44% 12%; /* #101C2C */
     --foreground: 0 0% 100%; /* Pure white */
     
-    --card: 30 80% 70% / 0.1; /* Pastel orange with transparency */
+    --card: 30 90% 70% / 0.15; /* Vibrant orange with transparency */
     --card-foreground: 0 0% 100%; /* Pure white */
     
-    --popover: 30 80% 70% / 0.1; /* Pastel orange with transparency */
+    --popover: 30 90% 70% / 0.15; /* Vibrant orange with transparency */
     --popover-foreground: 0 0% 100%; /* Pure white */
     
     --primary: 145 100% 40%; /* #00CC52 */
     --primary-foreground: 0 0% 100%; /* Pure white */
     
-    --secondary: 255 100% 70%; /* #6b5cff */
+    --secondary: 255 100% 70%; /* #6B5CFF */
     --secondary-foreground: 0 0% 100%; /* Pure white */
     
-    --muted: 30 60% 80% / 0.15; /* Pastel orange with transparency */
+    --muted: 30 60% 80% / 0.2; /* Vibrant orange with transparency */
     --muted-foreground: 0 0% 100% / 0.7; /* Semi-transparent white */
     
-    --accent: 30 60% 80% / 0.15; /* Pastel orange with transparency */
+    --accent: 30 60% 80% / 0.2; /* Vibrant orange with transparency */
     --accent-foreground: 0 0% 100%; /* Pure white */
     
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%; /* Pure white */
     
-    --border: 30 60% 80% / 0.2; /* Pastel orange with transparency */
-    --input: 30 60% 80% / 0.2; /* Pastel orange with transparency */
+    --border: 30 60% 80% / 0.2; /* Vibrant orange with transparency */
+    --input: 30 60% 80% / 0.2; /* Vibrant orange with transparency */
     --ring: 145 100% 40%; /* #00CC52 */
   }
 
-  /* Ocean theme with pastel colors and white text */
+  /* Ocean theme with vibrant colors and white text */
   [data-theme='ocean'] {
     --background: 218 44% 12%; /* #101C2C */
     --foreground: 0 0% 100%; /* Pure white */
     
-    --card: 210 70% 70% / 0.1; /* Pastel blue with transparency */
+    --card: 210 90% 70% / 0.15; /* Vibrant blue with transparency */
     --card-foreground: 0 0% 100%; /* Pure white */
     
-    --popover: 210 70% 70% / 0.1; /* Pastel blue with transparency */
+    --popover: 210 90% 70% / 0.15; /* Vibrant blue with transparency */
     --popover-foreground: 0 0% 100%; /* Pure white */
     
     --primary: 145 100% 40%; /* #00CC52 */
     --primary-foreground: 0 0% 100%; /* Pure white */
     
-    --secondary: 255 100% 70%; /* #6b5cff */
+    --secondary: 255 100% 70%; /* #6B5CFF */
     --secondary-foreground: 0 0% 100%; /* Pure white */
     
-    --muted: 210 50% 70% / 0.15; /* Pastel blue with transparency */
+    --muted: 210 50% 70% / 0.2; /* Vibrant blue with transparency */
     --muted-foreground: 0 0% 100% / 0.7; /* Semi-transparent white */
     
-    --accent: 210 50% 70% / 0.15; /* Pastel blue with transparency */
+    --accent: 210 50% 70% / 0.2; /* Vibrant blue with transparency */
     --accent-foreground: 0 0% 100%; /* Pure white */
     
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%; /* Pure white */
     
-    --border: 210 50% 70% / 0.2; /* Pastel blue with transparency */
-    --input: 210 50% 70% / 0.2; /* Pastel blue with transparency */
+    --border: 210 50% 70% / 0.2; /* Vibrant blue with transparency */
+    --input: 210 50% 70% / 0.2; /* Vibrant blue with transparency */
     --ring: 145 100% 40%; /* #00CC52 */
   }
 }
@@ -195,7 +171,7 @@
 @layer base {
   * {
     @apply border-border;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
   }
   
   html, body {
@@ -230,6 +206,7 @@
   .gradient-text {
     @apply bg-gradient-to-r from-theme-green to-theme-purple bg-clip-text text-transparent;
     text-shadow: 0 0 10px rgba(0, 204, 82, 0.2);
+    animation: gradient-shift 8s infinite alternate;
   }
   
   .btn-gradient {
@@ -292,22 +269,6 @@
     @apply bg-theme-dark/50 border border-theme-accent/20 rounded-full px-4 py-1.5 text-sm font-medium text-theme-blue;
   }
   
-  .android12-switch {
-    @apply relative w-12 h-6 rounded-full bg-theme-accent/20 transition-colors duration-200;
-  }
-  
-  .android12-switch::before {
-    @apply content-[''] absolute w-5 h-5 rounded-full bg-theme-blue top-0.5 left-0.5 transition-transform duration-200;
-  }
-  
-  .android12-switch.active {
-    @apply bg-theme-green/20;
-  }
-  
-  .android12-switch.active::before {
-    @apply transform translate-x-6 bg-theme-green;
-  }
-  
   /* Keep existing keyframe animations */
   @keyframes fadeIn {
     from {
@@ -327,5 +288,48 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+  
+  /* New animations */
+  @keyframes gradient-shift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
+  /* Micro-interactions for bento grid */
+  .bento-item {
+    @apply transition-all duration-300 overflow-hidden;
+    transform-origin: center center;
+  }
+  
+  .bento-item:hover {
+    @apply shadow-xl -translate-y-1 border-white/40;
+    transform: translateY(-4px) scale(1.02);
+    z-index: 10;
+  }
+  
+  .bento-item-icon {
+    @apply transition-all duration-300;
+  }
+  
+  .bento-item:hover .bento-item-icon {
+    transform: scale(1.1);
+  }
+  
+  /* Enhance scrollbar styling */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
   }
 }

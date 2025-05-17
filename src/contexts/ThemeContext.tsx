@@ -14,8 +14,9 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
+    // Always try to use stored theme first, but default to dark if none exists
     const storedTheme = localStorage.getItem('theme');
-    return (storedTheme as Theme) || 'dark'; // Set dark as default
+    return (storedTheme as Theme) || 'dark';
   });
   
   const [isEditingLayout, setIsEditingLayout] = useState<boolean>(false);
