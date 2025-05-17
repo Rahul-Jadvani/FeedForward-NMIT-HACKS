@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -29,7 +30,7 @@ import ExplorePage from "./pages/ExplorePage";
 import AIOrderVerificationPage from "./pages/AIOrderVerificationPage";
 import AnnapoornaChatbotPage from "./pages/AnnapoornaChatbotPage";
 import CSRDashboardPage from "./pages/CSRDashboardPage";
-import SanjeevaniPage from "./pages/SanjeevaniPage";
+import FarmFeedPage from "./pages/FarmFeedPage";
 import EcoMarketplacePage from "./pages/EcoMarketplacePage";
 import ProfilePage from "./pages/ProfilePage";
 import WalletPage from "./pages/WalletPage";
@@ -79,7 +80,7 @@ const App = () => (
                           <Route path="/ai-order-verification" element={<Layout><AIOrderVerificationPage /></Layout>} />
                           <Route path="/annapoorna-chatbot" element={<Layout><AnnapoornaChatbotPage /></Layout>} />
                           <Route path="/csr-dashboard" element={<Layout><CSRDashboardPage /></Layout>} />
-                          <Route path="/sanjeevani" element={<Layout><SanjeevaniPage /></Layout>} />
+                          <Route path="/farmfeed" element={<Layout><FarmFeedPage /></Layout>} />
                           <Route path="/eco-marketplace" element={<Layout><EcoMarketplacePage /></Layout>} />
                           
                           <Route path="/profile" element={

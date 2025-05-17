@@ -2,7 +2,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "react-router-dom";
-import { Home, MapPin, Heart, BarChart, ChevronLeft, ChevronRight, Info, Users, User, Database, Globe, Bot, FileCheck, BarChart4, ShoppingCart, AlertTriangle, Coins } from "lucide-react";
+import { Home, MapPin, Heart, BarChart, ChevronLeft, ChevronRight, Info, Users, User, Database, Globe, Bot, FileCheck, BarChart4, ShoppingCart, Tractor, Coins } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -16,7 +16,7 @@ const menuItems = [
   { icon: BarChart, label: "Community Impact", to: "/impact" },
   { icon: Bot, label: "Annapoorna Chatbot", to: "/annapoorna-chatbot" },
   { icon: FileCheck, label: "AI Order Verification", to: "/ai-order-verification" },
-  { icon: AlertTriangle, label: "Sanjeevani", to: "/sanjeevani", special: true },
+  { icon: Tractor, label: "FarmFeed", to: "/farmfeed", special: true },
   { icon: ShoppingCart, label: "Eco-Marketplace", to: "/eco-marketplace" },
   { icon: BarChart4, label: "CSR Dashboard", to: "/csr-dashboard" },
   { icon: Coins, label: "FeedCoin Wallet", to: "/wallet" },

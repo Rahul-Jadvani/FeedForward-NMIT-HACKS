@@ -17,7 +17,7 @@ import {
   FileCheck, 
   BarChart4, 
   ShoppingCart, 
-  AlertTriangle,
+  Tractor,
   Gift,
   MessageSquare,
   CheckCircle,
@@ -118,13 +118,13 @@ export default function Home() {
       color: "bg-orange-100/20"
     },
     {
-      id: "sanjeevani",
-      title: "SANJEEVANI",
-      description: "EMERGENCY FOOD DISTRIBUTION DURING DISASTERS",
-      icon: <AlertTriangle className="h-6 w-6" />,
-      to: "/sanjeevani",
+      id: "farmfeed",
+      title: "FARMFEED",
+      description: "EMPOWER FARMERS TO DONATE SURPLUS CROPS AND RECEIVE ORGANIC MANURE",
+      icon: <Tractor className="h-6 w-6" />,
+      to: "/farmfeed",
       size: "small",
-      color: "bg-red-100/20"
+      color: "bg-green-100/20"
     },
     {
       id: "csr-dashboard",

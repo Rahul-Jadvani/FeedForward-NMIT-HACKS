@@ -1,6 +1,6 @@
 
 import { Link, useLocation } from "react-router-dom";
-import { MapPin, Award, ShoppingBag, BarChart, Bot, FileCheck, Globe, Database, BarChart4 } from "lucide-react";
+import { MapPin, Award, ShoppingBag, BarChart, Bot, FileCheck, Globe, Database, BarChart4, Tractor } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
