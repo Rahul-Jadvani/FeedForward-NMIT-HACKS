@@ -52,11 +52,13 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // FeedForward specific colors - updated to new color scheme
-        "ff-green": "#00cc52",
-        "ff-purple": "#6b5cff",
-        "ff-light-green": "#33d675",
-        "ff-light-purple": "#8d82ff",
+        // Custom theme colors
+        "theme-blue": "#99BDFF",
+        "theme-green": "#00CC52",
+        "theme-purple": "#6b5cff",
+        "theme-dark": "#101C2C",
+        "theme-accent": "#6884CA",
+        "transparent-black": "rgba(0, 0, 0, 0.1)",
       },
       borderRadius: {
         lg: "var(--radius)",

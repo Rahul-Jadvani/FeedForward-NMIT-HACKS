@@ -1,4 +1,3 @@
-
 "use client";
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
@@ -13,6 +12,9 @@ import { FormControl } from "@/components/ui/form";
 declare global {
   interface Window {
     L: typeof L & {
+      Routing?: {
+        control: (options: any) => any;
+      };
       Control: {
         Geocoder: {
           new(options: any): any;
