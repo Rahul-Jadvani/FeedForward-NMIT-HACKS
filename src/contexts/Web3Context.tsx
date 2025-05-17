@@ -1,6 +1,5 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { useAccount, useBalance, useReadContract, useWriteContract, useConfig, useReadContractsInfinite } from 'wagmi';
+import { useAccount, useBalance, useReadContract, useWriteContract, useConfig, useReadContracts } from 'wagmi';
 import { formatEther, parseEther } from 'viem';
 import { toast } from "sonner";
 import { baseSepolia } from 'wagmi/chains';
@@ -198,11 +197,10 @@ export function Web3Provider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     try {
       await writeContractAsync({
-        abi: FEED_FORWARD_ABI,
         address: FEED_FORWARD_ADDRESS as `0x${string}`,
+        abi: FEED_FORWARD_ABI,
         functionName: 'registerNGO',
         args: [name],
-        chainId: baseSepolia.id,
       });
       
       toast.success("NGO registration submitted successfully!");
@@ -228,7 +226,6 @@ export function Web3Provider({ children }: { children: ReactNode }) {
         abi: FEED_FORWARD_ABI,
         functionName: 'getNGO',
         args: [ngoAddress as `0x${string}`],
-        chainId: baseSepolia.id,
       });
       
       if (result && Array.isArray(result) && result.length === 3) {
@@ -269,7 +266,6 @@ export function Web3Provider({ children }: { children: ReactNode }) {
         functionName: 'donate',
         args: [ngoAddress as `0x${string}`],
         value: parseEther(amount),
-        chainId: baseSepolia.id,
       });
       
       toast.success("Donation successful!");
@@ -294,7 +290,6 @@ export function Web3Provider({ children }: { children: ReactNode }) {
         address: DONATION_NFT_ADDRESS as `0x${string}`,
         abi: DONATION_NFT_ABI,
         functionName: 'claimNFT',
-        chainId: baseSepolia.id,
       });
       
       toast.success("NFT claim submitted!");
@@ -320,7 +315,6 @@ export function Web3Provider({ children }: { children: ReactNode }) {
         address: FEED_COIN_ADDRESS as `0x${string}`,
         abi: FEED_COIN_ABI,
         functionName: 'claimTokens',
-        chainId: baseSepolia.id,
       });
       
       toast.success("Tokens claim submitted!");
@@ -342,7 +336,6 @@ export function Web3Provider({ children }: { children: ReactNode }) {
         abi: DONATION_NFT_ABI,
         functionName: 'balanceOf',
         args: [address as `0x${string}`],
-        chainId: baseSepolia.id,
       });
       
       const nfts: NFT[] = [];
@@ -358,7 +351,6 @@ export function Web3Provider({ children }: { children: ReactNode }) {
             abi: DONATION_NFT_ABI,
             functionName: 'tokenURI',
             args: [BigInt(i)],
-            chainId: baseSepolia.id,
           });
           
           nfts.push({ id: i, uri: uri as string });
@@ -374,7 +366,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
   };
 
   // Prepare contract call utility function - updated for compatibility
-  const readContract = async ({ address, abi, functionName, args = [], chainId }: any) => {
+  const readContract = async ({ address, abi, functionName, args = [] }: any) => {
     // This is a mock implementation for demonstration purposes
     console.log(`Reading contract ${address} function ${functionName} with args:`, args);
     
