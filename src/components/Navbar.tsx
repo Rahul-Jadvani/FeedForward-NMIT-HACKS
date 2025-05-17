@@ -11,7 +11,7 @@ export function Navbar() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
+    <header className="sticky top-0 z-40 w-full bg-transparent backdrop-blur-sm border-b border-border/40">
       <nav className="container flex h-16 items-center justify-between">
         <Link 
           to="/" 

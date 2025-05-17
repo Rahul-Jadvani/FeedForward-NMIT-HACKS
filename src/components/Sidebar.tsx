@@ -57,8 +57,27 @@ export function Sidebar() {
     };
   }, [collapsed]);
 
-  // Always use dark background for sidebar, regardless of theme
-  const sidebarBgClass = "bg-theme-dark/90 backdrop-blur-md";
+  // Use appropriate background color based on theme
+  const sidebarBgClass = theme === 'dark' 
+    ? "bg-theme-dark/90 backdrop-blur-md" 
+    : "bg-background/80 backdrop-blur-md border-gray-200";
+
+  // Use appropriate text color based on theme  
+  const textColorClass = theme === 'dark'
+    ? "text-white/70" 
+    : "text-foreground/70";
+  
+  const activeTextColorClass = theme === 'dark'
+    ? "text-white" 
+    : "text-foreground";
+
+  const hoverBgClass = theme === 'dark'
+    ? "hover:bg-white/10" 
+    : "hover:bg-black/5";
+
+  const activeBgClass = theme === 'dark'
+    ? "bg-white/20" 
+    : "bg-black/10";
 
   return (
     <>
@@ -75,7 +94,7 @@ export function Sidebar() {
           "fixed left-0 top-16 h-[calc(100vh-4rem)] shadow-lg z-40",
           sidebarBgClass,
           "transition-all duration-300 ease-in-out",
-          "border-r border-white/10",
+          theme === 'dark' ? "border-r border-white/10" : "border-r border-gray-200",
           collapsed ? "w-16 -translate-x-16 md:translate-x-0" : "w-[240px]",
           hoverState && collapsed && "translate-x-0"
         )}
@@ -90,15 +109,16 @@ export function Sidebar() {
                 to={item.to}
                 className={({ isActive }) => cn(
                   "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
-                  "hover:bg-white/10 hover:text-white",
-                  isActive ? "bg-white/20 text-white" : "text-white/70",
+                  hoverBgClass, 
+                  isActive ? activeBgClass : "",
+                  isActive ? activeTextColorClass : textColorClass,
                   collapsed && "justify-center",
-                  item.special && "text-white text-red-500 ",
+                  item.special && "text-red-500",
                   "text-lg" // Increased font size
                 )}
               >
                 <item.icon size={22} /> {/* Slightly increased icon size */}
-                {!collapsed && <span className="text-white">{item.label}</span>}
+                {!collapsed && <span>{item.label}</span>}
               </NavLink>
             ))}
           </nav>
@@ -106,7 +126,7 @@ export function Sidebar() {
           <Button
             variant="ghost"
             size="icon"
-            className="self-end mt-4 text-white/70 hover:text-white hover:bg-white/10"
+            className={`self-end mt-4 ${textColorClass} ${hoverBgClass}`}
             onClick={() => setCollapsed(!collapsed)}
           >
             {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}

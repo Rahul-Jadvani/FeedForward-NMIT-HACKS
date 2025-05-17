@@ -24,7 +24,7 @@ interface BentoGridProps {
 export function BentoGrid({ items }: BentoGridProps) {
   const [gridItems, setGridItems] = useState<BentoItem[]>(items);
   const [animatingItems, setAnimatingItems] = useState<boolean>(false);
-  const { isEditingLayout, setIsEditingLayout } = useTheme();
+  const { isEditingLayout, setIsEditingLayout, theme } = useTheme();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   // Load saved layout from localStorage
@@ -46,6 +46,9 @@ export function BentoGrid({ items }: BentoGridProps) {
       } catch (err) {
         console.error("Error loading saved layout:", err);
       }
+    } else {
+      // Optimize layout if no saved layout
+      optimizeLayout(items);
     }
     
     // Set initial load to false after a short delay to trigger entrance animations
@@ -61,6 +64,20 @@ export function BentoGrid({ items }: BentoGridProps) {
     setItems: setGridItems,
   });
 
+  // Function to optimize layout and avoid empty spaces
+  const optimizeLayout = (itemsToOptimize: BentoItem[]) => {
+    // Create a copy to avoid direct mutation
+    const newItems = [...itemsToOptimize];
+    
+    // First, sort by size to place larger items first
+    newItems.sort((a, b) => {
+      const sizeOrder = { large: 3, medium: 2, small: 1 };
+      return sizeOrder[b.size] - sizeOrder[a.size];
+    });
+    
+    setGridItems(newItems);
+  };
+
   const shuffleItems = () => {
     setAnimatingItems(true);
     
@@ -74,7 +91,8 @@ export function BentoGrid({ items }: BentoGridProps) {
     }
     
     setTimeout(() => {
-      setGridItems(newItems);
+      // After shuffling, optimize layout to avoid empty spaces
+      optimizeLayout(newItems);
       setAnimatingItems(false);
       toast.success("Items shuffled successfully!", {
         icon: <Shuffle className="h-4 w-4" />
@@ -99,7 +117,8 @@ export function BentoGrid({ items }: BentoGridProps) {
   const resetLayout = () => {
     setAnimatingItems(true);
     setTimeout(() => {
-      setGridItems(items);
+      // Reset and optimize original layout
+      optimizeLayout(items);
       localStorage.removeItem('bentoLayout');
       setAnimatingItems(false);
       setIsEditingLayout(false);
@@ -109,24 +128,41 @@ export function BentoGrid({ items }: BentoGridProps) {
     }, 300);
   };
   
-  // Function to get vibrant color class based on theme
-  const getVibrantColor = (baseColor: string, index: number) => {
-    const vibrantColors = [
-      "bg-gradient-to-br from-pink-400/20 to-purple-500/20",
-      "bg-gradient-to-br from-green-400/20 to-blue-500/20",
-      "bg-gradient-to-br from-yellow-400/20 to-orange-500/20",
-      "bg-gradient-to-br from-indigo-400/20 to-cyan-500/20",
-      "bg-gradient-to-br from-red-400/20 to-yellow-500/20",
-      "bg-gradient-to-br from-teal-400/20 to-blue-500/20",
-      "bg-gradient-to-br from-fuchsia-400/20 to-rose-500/20",
-      "bg-gradient-to-br from-amber-400/20 to-orange-500/20",
-      "bg-gradient-to-br from-sky-400/20 to-indigo-500/20",
-      "bg-gradient-to-br from-lime-400/20 to-emerald-500/20",
-      "bg-gradient-to-br from-violet-400/20 to-purple-500/20",
-      "bg-gradient-to-br from-rose-400/20 to-pink-500/20",
+  // Function to get color class based on theme and index
+  const getItemColorClass = (index: number) => {
+    // Light mode colors matching your image
+    const lightModeColors = [
+      "bg-pink-100/70", // pink
+      "bg-teal-100/70", // mint
+      "bg-amber-100/70", // yellow
+      "bg-blue-100/70", // light blue
+      "bg-purple-100/70", // light purple
+      "bg-green-100/70", // light green
+      "bg-orange-100/80", // light orange
+      "bg-indigo-100/70", // light indigo
+      "bg-rose-100/70", // light rose
+      "bg-emerald-100/70", // light emerald
+      "bg-violet-100/70", // light violet
+      "bg-sky-100/70", // light sky
     ];
     
-    return vibrantColors[index % vibrantColors.length];
+    // Dark mode colors for dark theme
+    const darkModeColors = [
+      "bg-gradient-to-br from-pink-500/20 to-purple-600/20",
+      "bg-gradient-to-br from-green-500/20 to-teal-600/20",
+      "bg-gradient-to-br from-amber-500/20 to-orange-600/20",
+      "bg-gradient-to-br from-blue-500/20 to-indigo-600/20",
+      "bg-gradient-to-br from-purple-500/20 to-violet-600/20",
+      "bg-gradient-to-br from-emerald-500/20 to-green-600/20",
+      "bg-gradient-to-br from-rose-500/20 to-red-600/20",
+      "bg-gradient-to-br from-indigo-500/20 to-blue-600/20",
+      "bg-gradient-to-br from-yellow-500/20 to-amber-600/20",
+      "bg-gradient-to-br from-teal-500/20 to-cyan-600/20",
+      "bg-gradient-to-br from-violet-500/20 to-purple-600/20",
+      "bg-gradient-to-br from-orange-500/20 to-red-600/20",
+    ];
+    
+    return theme === 'dark' ? darkModeColors[index % darkModeColors.length] : lightModeColors[index % lightModeColors.length];
   };
   
   return (
@@ -181,14 +217,19 @@ export function BentoGrid({ items }: BentoGridProps) {
           
           // Calculate animation delay for staggered entrance
           const animationDelay = `${(index % 12) * 0.05 + 0.1}s`;
-          const vibrantColor = getVibrantColor(item.color, index);
+          const itemColorClass = getItemColorClass(index);
+          
+          // Border color based on theme
+          const borderClass = theme === 'dark' 
+            ? "border-white/10" 
+            : "border-gray-200/80";
           
           return isEditingLayout ? (
             <div 
               key={item.id}
-              className={`bento-item ${sizeClass} ${vibrantColor} backdrop-blur-lg border border-white/20 rounded-xl p-6 
+              className={`bento-item ${sizeClass} ${itemColorClass} backdrop-blur-sm border ${borderClass} rounded-xl p-6 
                 ${animatingItems ? 'animate-bounce-in' : isInitialLoad ? 'opacity-0' : 'animate-slide-up-fade'}
-                ${isEditingLayout ? 'cursor-move border-dashed border-2 hover:border-white/60' : ''}`}
+                ${isEditingLayout ? 'cursor-move border-dashed border-2 hover:border-foreground/40' : ''}`}
               style={{ animationDelay }}
               draggable={true}
               onDragStart={(e) => handleDragStart(e, index)}
@@ -197,7 +238,7 @@ export function BentoGrid({ items }: BentoGridProps) {
               onDragOver={(e) => e.preventDefault()}
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className="bento-item-icon h-10 w-10 rounded-full bg-white/10 flex items-center justify-center">
+                <div className="bento-item-icon h-10 w-10 rounded-full bg-foreground/10 flex items-center justify-center">
                   {isEditingLayout ? <Move className="h-6 w-6" /> : item.icon}
                 </div>
                 <h3 className="font-display font-medium text-sm md:text-base uppercase">{item.title}</h3>
@@ -208,15 +249,15 @@ export function BentoGrid({ items }: BentoGridProps) {
             </div>
           ) : (
             <Link 
-              key={item.id}
+              key={item.to}
               to={item.to}
-              className={`bento-item ${sizeClass} ${vibrantColor} backdrop-blur-lg border border-white/10 rounded-xl p-6 
+              className={`bento-item ${sizeClass} ${itemColorClass} backdrop-blur-sm border ${borderClass} rounded-xl p-6 
                 flex flex-col group
                 ${animatingItems ? 'animate-bounce-in' : isInitialLoad ? 'opacity-0' : 'animate-slide-up-fade'}`}
               style={{ animationDelay }}
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className="bento-item-icon h-10 w-10 rounded-full bg-white/10 flex items-center justify-center">
+                <div className="bento-item-icon h-10 w-10 rounded-full bg-foreground/10 flex items-center justify-center">
                   {item.icon}
                 </div>
                 <h3 className="font-display font-medium text-sm md:text-base uppercase">{item.title}</h3>
