@@ -1,3 +1,4 @@
+
 "use client";
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
@@ -10,6 +11,24 @@ import { Input } from "@/components/ui/input";
 interface InteractiveMapProps {
   foodFlags: any[];
   onFoodFlagClick?: (id: string) => void;
+}
+
+// Extend the Leaflet namespace for the missing Geocoder type
+declare module "leaflet" {
+  namespace Control {
+    interface GeocoderOptions {
+      geocoder?: any;
+      defaultMarkGeocode?: boolean;
+    }
+    
+    class Geocoder extends Control {
+      constructor(options?: GeocoderOptions);
+      on(type: string, fn: (e: any) => void): this;
+      markGeocode(result: any): void;
+    }
+    
+    function geocoder(options?: GeocoderOptions): Geocoder;
+  }
 }
 
 const InteractiveMap = ({ foodFlags, onFoodFlagClick }: InteractiveMapProps) => {
@@ -131,9 +150,17 @@ const InteractiveMap = ({ foodFlags, onFoodFlagClick }: InteractiveMapProps) => 
     geoButton.addTo(newMap);
 
     // Add geocoder control (Autocomplete for search)
-    if (L.Control.Geocoder && L.Control.Geocoder.nominatim) {
-      const geocoder = L.Control.Geocoder.nominatim();
-      L.Control.geocoder({ geocoder }).addTo(newMap);
+    if (window.L && window.L.Control && window.L.Control.Geocoder) {
+      const geocoder = new L.Control.Geocoder.Nominatim();
+      new L.Control.Geocoder({
+        geocoder: geocoder,
+        defaultMarkGeocode: false,
+      })
+      .on('markgeocode', (e) => {
+        const { center, name } = e.geocode;
+        newMap.setView(center, 16);
+      })
+      .addTo(newMap);
     }
 
     // Add markers for food flags
@@ -294,4 +321,4 @@ const InteractiveMap = ({ foodFlags, onFoodFlagClick }: InteractiveMapProps) => 
   );
 };
 
-export default InteractiveMap; 
+export default InteractiveMap;

@@ -1,3 +1,4 @@
+
 "use client";
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
@@ -11,6 +12,24 @@ import { FormControl } from "@/components/ui/form";
 interface LocationPickerProps {
   value?: string;
   onChange?: (address: string) => void;
+}
+
+// Extend the Leaflet namespace for the missing Geocoder type
+declare module "leaflet" {
+  namespace Control {
+    interface GeocoderOptions {
+      geocoder?: any;
+      defaultMarkGeocode?: boolean;
+    }
+    
+    class Geocoder extends Control {
+      constructor(options?: GeocoderOptions);
+      on(type: string, fn: (e: any) => void): this;
+      markGeocode(result: any): void;
+    }
+    
+    function geocoder(options?: GeocoderOptions): Geocoder;
+  }
 }
 
 const LocationPicker = ({ value, onChange }: LocationPickerProps) => {
@@ -97,9 +116,9 @@ const LocationPicker = ({ value, onChange }: LocationPickerProps) => {
     });
 
     // Add geocoder control (Autocomplete for search)
-    if (L.Control.Geocoder && L.Control.Geocoder.nominatim) {
-      const geocoder = L.Control.Geocoder.nominatim();
-      L.Control.geocoder({
+    if (window.L && window.L.Control && window.L.Control.Geocoder) {
+      const geocoder = new L.Control.Geocoder.Nominatim();
+      new L.Control.Geocoder({
         geocoder,
         defaultMarkGeocode: false,
       })
@@ -249,4 +268,4 @@ const LocationPicker = ({ value, onChange }: LocationPickerProps) => {
   );
 };
 
-export default LocationPicker; 
+export default LocationPicker;
