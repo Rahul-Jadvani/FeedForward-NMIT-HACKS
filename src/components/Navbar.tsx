@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { ConnectWallet } from "./ConnectWallet";
-import { ThemeSwitcher } from "./ThemeSwitcher";
+import { ThemeToggle } from "./ThemeToggle";
 import { UserMenu } from "./nav/UserMenu";
 import { NotificationButton } from "./nav/NotificationButton";
 
@@ -22,7 +22,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-4">
           <ConnectWallet />
-          <ThemeSwitcher />
+          <ThemeToggle />
           <NotificationButton />
           
           {isAuthenticated ? (
