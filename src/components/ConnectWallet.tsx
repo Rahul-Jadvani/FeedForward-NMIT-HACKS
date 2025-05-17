@@ -13,6 +13,8 @@ export function ConnectWallet() {
         openConnectModal,
         mounted,
       }) => {
+        // Note: If your app doesn't use authentication, you
+        // can remove all 'authenticationStatus' checks
         const ready = mounted;
         const connected = ready && account && chain;
 
@@ -32,10 +34,8 @@ export function ConnectWallet() {
               if (!connected) {
                 return (
                   <Button
-                    variant="gradient" 
-                    size="sm"
-                    className="animate-pulse-glow shadow-ff-blue/30"
                     onClick={openConnectModal}
+                    className="bg-transparent-black/30 backdrop-blur-md border-theme-accent text-theme-blue hover:bg-theme-accent/20 shadow-md modern-button android12-button"
                   >
                     Connect Wallet
                   </Button>
@@ -47,15 +47,15 @@ export function ConnectWallet() {
                   <Button
                     onClick={openChainModal}
                     variant="outline"
-                    className="glass-card flex items-center gap-1 px-3 py-1 h-9 border-ff-blue/30"
+                    className="flex items-center gap-1 px-2 py-1 h-9 bg-transparent-black/30 backdrop-blur-md border-theme-accent/70 text-theme-blue hover:bg-theme-accent/20 rounded-full"
                   >
                     {chain.name}
                   </Button>
 
                   <Button
                     onClick={openAccountModal}
-                    variant="gradient"
-                    className="flex items-center gap-1 px-3 py-1 h-9"
+                    variant="outline"
+                    className="flex items-center gap-1 px-2 py-1 h-9 bg-transparent-black/30 backdrop-blur-md border-theme-green/70 text-theme-green hover:bg-theme-green/20 rounded-full"
                   >
                     {account.displayName}
                     {account.displayBalance ? ` (${account.displayBalance})` : ''}

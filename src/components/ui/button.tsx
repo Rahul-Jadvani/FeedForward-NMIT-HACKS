@@ -6,26 +6,28 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border shadow-sm hover:shadow-md hover:-translate-y-0.5 active:shadow-sm active:translate-y-0 active:scale-[0.98]",
   {
     variants: {
       variant: {
-        default: "bg-ff-blue text-white border-ff-blue/20 hover:bg-ff-blue/90 hover:shadow-ff-blue/30",
+        default: "bg-primary/80 text-primary-foreground backdrop-blur-md border-primary/20 hover:bg-primary/90",
         destructive:
-          "bg-destructive text-destructive-foreground border-destructive/20 hover:bg-destructive/90",
+          "bg-destructive/80 text-destructive-foreground backdrop-blur-md border-destructive/20 hover:bg-destructive/90",
         outline:
-          "border border-input bg-background/30 backdrop-blur-sm hover:bg-accent hover:text-accent-foreground",
+          "border border-input bg-transparent hover:bg-accent/20 hover:text-accent-foreground backdrop-blur-sm",
         secondary:
-          "bg-ff-purple text-white border-ff-purple/20 hover:bg-ff-purple/80 hover:shadow-ff-purple/30",
-        ghost: "hover:bg-accent hover:text-accent-foreground border-transparent",
+          "bg-secondary/80 text-secondary-foreground backdrop-blur-md border-secondary/20 hover:bg-secondary/80",
+        ghost: "hover:bg-accent/20 hover:text-accent-foreground border-transparent",
         link: "text-primary underline-offset-4 hover:underline border-transparent",
-        gradient: "bg-gradient-to-r from-ff-blue to-ff-purple hover:from-ff-blue/90 hover:to-ff-purple/90 text-white border-transparent hover:shadow-ff-blue/30",
+        pixel: "bg-theme-accent/20 text-theme-blue border border-theme-accent/30 backdrop-blur-md hover:bg-theme-accent/30",
+        green: "bg-theme-green/20 text-theme-green border border-theme-green/30 backdrop-blur-md hover:bg-theme-green/30",
+        purple: "bg-theme-purple/20 text-theme-purple border border-theme-purple/30 backdrop-blur-md hover:bg-theme-purple/30",
       },
       size: {
-        default: "h-10 px-5 py-2.5",
-        sm: "h-9 rounded-xl px-3",
-        lg: "h-12 rounded-full px-8 text-base",
-        icon: "h-10 w-10 rounded-full",
+        default: "h-10 px-5 py-2",
+        sm: "h-9 rounded-3xl px-4",
+        lg: "h-11 rounded-full px-8",
+        icon: "h-10 w-10",
       },
     },
     defaultVariants: {

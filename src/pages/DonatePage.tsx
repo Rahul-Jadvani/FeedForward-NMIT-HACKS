@@ -72,7 +72,8 @@ const donationFormSchema = z.object({
 
   // Location & Pickup
   pickupAddress: z.string().min(5, "Please enter a valid address"),
-  pickupTimeWindow: z.string().min(1, "Please specify pickup time"),
+  pickupDate: z.string().min(1, "Please specify pickup date"),
+  pickupTime: z.string().min(1, "Please specify pickup time"),
   logisticsSupport: z.boolean().optional(),
   onSiteContact: z.string().optional(),
 
@@ -120,7 +121,8 @@ export default function DonatePage() {
       preparedDateTime: "",
       bestBefore: "",
       pickupAddress: "",
-      pickupTimeWindow: "",
+      pickupDate: "",
+      pickupTime: "",
       logisticsSupport: false,
       onSiteContact: "",
       isHygienicallyPacked: "yes",
