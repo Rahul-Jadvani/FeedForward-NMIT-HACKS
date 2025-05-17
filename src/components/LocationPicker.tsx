@@ -9,6 +9,22 @@ import "leaflet-routing-machine";
 import { Input } from "@/components/ui/input";
 import { FormControl } from "@/components/ui/form";
 
+// Make TypeScript understand our global Leaflet extensions
+declare global {
+  interface Window {
+    L: typeof L & {
+      Control: {
+        Geocoder: {
+          new(options: any): any;
+          Nominatim: {
+            new(): any;
+          };
+        };
+      };
+    };
+  }
+}
+
 interface LocationPickerProps {
   value?: string;
   onChange?: (address: string) => void;

@@ -22,6 +22,25 @@ interface InteractiveMapProps {
   onFoodFlagClick?: (id: string) => void;
 }
 
+// We need to extend the Window interface to make TypeScript understand our global extensions
+declare global {
+  interface Window {
+    L: typeof L & {
+      Routing: {
+        control: (options: any) => any;
+      };
+      Control: {
+        Geocoder: {
+          new(options: any): any;
+          Nominatim: {
+            new(): any;
+          };
+        };
+      };
+    };
+  }
+}
+
 const InteractiveMap = ({ foodFlags, onFoodFlagClick }: InteractiveMapProps) => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -111,7 +130,8 @@ const InteractiveMap = ({ foodFlags, onFoodFlagClick }: InteractiveMapProps) => 
     
     // Clear existing routes
     if (map && window.L && window.L.Routing) {
-      // Create routing control
+      // Create routing control - this is where the TS error was happening
+      // We use the window.L.Routing.control instead of accessing it directly
       const routingControl = window.L.Routing.control({
         waypoints: [
           L.latLng(userLocation[0], userLocation[1]),
@@ -158,10 +178,10 @@ const InteractiveMap = ({ foodFlags, onFoodFlagClick }: InteractiveMapProps) => 
       position: 'bottomright'
     }).addTo(newMap);
     
-    // Add custom geolocation button
+    // Add custom geolocation button - fixing the type issue with control
     const geoButton = L.control({
       position: 'bottomright'
-    }) as L.Control;
+    });
     
     geoButton.onAdd = function() {
       const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
