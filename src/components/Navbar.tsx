@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { ConnectWallet } from "./ConnectWallet";
 import { ThemeToggle } from "./ThemeToggle";
-import { ThemeSwitcher } from "./ThemeSwitcher";
 import { UserMenu } from "./nav/UserMenu";
 import { NotificationButton } from "./nav/NotificationButton";
 
@@ -24,7 +23,6 @@ export function Navbar() {
         <div className="flex items-center gap-4">
           <ConnectWallet />
           <ThemeToggle />
-          <ThemeSwitcher />
           <NotificationButton />
           
           {isAuthenticated ? (

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { NavLink } from "react-router-dom";
 import { Home, MapPin, Heart, BarChart, ChevronLeft, ChevronRight, Info, Users, User, Database, Globe, Bot, FileCheck, BarChart4, ShoppingCart, AlertTriangle } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const menuItems = [
   { icon: Home, label: "Home", to: "/" },
@@ -27,6 +28,7 @@ export function Sidebar() {
   const [hoverState, setHoverState] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const hoverZoneRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
   
   const handleMouseEnter = () => {
     setHoverState(true);
@@ -55,6 +57,9 @@ export function Sidebar() {
     };
   }, [collapsed]);
 
+  // Always use dark background for sidebar, regardless of theme
+  const sidebarBgClass = "bg-theme-dark/90 backdrop-blur-md";
+
   return (
     <>
       {/* Hover detection zone */}
@@ -67,7 +72,8 @@ export function Sidebar() {
       <div 
         ref={sidebarRef}
         className={cn(
-          "fixed left-0 top-16 h-[calc(100vh-4rem)] shadow-lg z-40 bg-theme-dark/90 backdrop-blur-md",
+          "fixed left-0 top-16 h-[calc(100vh-4rem)] shadow-lg z-40",
+          sidebarBgClass,
           "transition-all duration-300 ease-in-out",
           "border-r border-white/10",
           collapsed ? "w-16 -translate-x-16 md:translate-x-0" : "w-[240px]",
@@ -87,10 +93,11 @@ export function Sidebar() {
                   "hover:bg-white/10 hover:text-white",
                   isActive ? "bg-white/20 text-white" : "text-white/70",
                   collapsed && "justify-center",
-                  item.special && "text-white text-red-500 "
+                  item.special && "text-white text-red-500 ",
+                  "text-lg" // Increased font size
                 )}
               >
-                <item.icon size={20} />
+                <item.icon size={22} /> {/* Slightly increased icon size */}
                 {!collapsed && <span className="text-white">{item.label}</span>}
               </NavLink>
             ))}

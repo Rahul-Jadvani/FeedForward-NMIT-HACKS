@@ -6,32 +6,31 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Palette } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
 
 const themes = [
   { name: 'Light', value: 'light', emoji: '☀️' },
   { name: 'Dark', value: 'dark', emoji: '🌙' },
-  { name: 'Forest', value: 'forest', emoji: '🌳' },
-  { name: 'Sunset', value: 'sunset', emoji: '🌅' },
-  { name: 'Ocean', value: 'ocean', emoji: '🌊' },
 ] as const;
 
 export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
 
-  const handleThemeChange = (newTheme: typeof themes[number]['value']) => {
+  const handleThemeChange = (newTheme: 'light' | 'dark') => {
     setTheme(newTheme);
     const selectedTheme = themes.find(t => t.value === newTheme);
-    toast.success(`${selectedTheme?.name} theme activated!`);
+    if (selectedTheme) {
+      toast.success(`${selectedTheme.name} theme activated!`);
+    }
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative w-9 h-9 rounded-full bg-background/50 backdrop-blur-sm border border-border/50 transition-all duration-300 hover:shadow-glow hover:animate-pulse-subtle">
-          <Palette className="h-5 w-5" />
+          {theme === 'dark' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
           <span className="sr-only">Select theme</span>
         </Button>
       </DropdownMenuTrigger>

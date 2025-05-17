@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'light' | 'dark' | 'forest' | 'sunset' | 'ocean';
+type Theme = 'light' | 'dark';
 
 interface ThemeContextType {
   theme: Theme;
@@ -16,7 +16,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     // Always try to use stored theme first, but default to dark if none exists
     const storedTheme = localStorage.getItem('theme');
-    return (storedTheme as Theme) || 'dark';
+    return (storedTheme === 'light' ? 'light' : 'dark');
   });
   
   const [isEditingLayout, setIsEditingLayout] = useState<boolean>(false);
@@ -25,7 +25,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('theme', theme);
     document.documentElement.setAttribute('data-theme', theme);
     
-    // Apply dark class only when theme is dark
+    // Apply dark class for dark theme
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
