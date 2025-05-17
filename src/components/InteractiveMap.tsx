@@ -1,4 +1,3 @@
-
 "use client";
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
@@ -108,9 +107,9 @@ const InteractiveMap = ({ foodFlags, onFoodFlagClick }: InteractiveMapProps) => 
     if (!userLocation) return;
     
     // Clear existing routes
-    if (map && (window.L as any).Routing) {
+    if (map && window.L.Routing) {
       // Create routing control
-      const control = (window.L as any).Routing.control({
+      const routingControl = window.L.Routing.control({
         waypoints: [
           L.latLng(userLocation[0], userLocation[1]),
           L.latLng(destination[0], destination[1])
@@ -128,9 +127,10 @@ const InteractiveMap = ({ foodFlags, onFoodFlagClick }: InteractiveMapProps) => 
           ]
         },
         createMarker: function() { return null; } // Don't create default markers
-      }).addTo(map);
+      });
       
-      return control;
+      routingControl.addTo(map);
+      return routingControl;
     }
   };
   

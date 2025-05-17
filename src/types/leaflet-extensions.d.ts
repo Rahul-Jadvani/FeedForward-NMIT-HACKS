@@ -10,6 +10,9 @@ declare global {
           Nominatim: any;
           new(options?: L.Control.GeocoderOptions): L.Control.Geocoder;
         }
+      },
+      Routing: {
+        control: (options: any) => any;
       }
     }
   }

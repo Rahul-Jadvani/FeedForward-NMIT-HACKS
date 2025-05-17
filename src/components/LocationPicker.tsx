@@ -1,4 +1,3 @@
-
 "use client";
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
@@ -101,11 +100,12 @@ const LocationPicker = ({ value, onChange }: LocationPickerProps) => {
     // Add geocoder control (Autocomplete for search)
     if (window.L && window.L.Control && window.L.Control.Geocoder) {
       const geocoder = new window.L.Control.Geocoder.Nominatim();
-      new window.L.Control.Geocoder({
+      const geocoderControl = new window.L.Control.Geocoder({
         geocoder,
         defaultMarkGeocode: false,
-      })
-      .on('markgeocode', async (e) => {
+      });
+      
+      geocoderControl.on('markgeocode', async (e) => {
         const { center, name } = e.geocode;
         newMap.setView(center, 16);
         
@@ -132,8 +132,9 @@ const LocationPicker = ({ value, onChange }: LocationPickerProps) => {
 
         setAddress(name);
         onChange?.(name);
-      })
-      .addTo(newMap);
+      });
+      
+      geocoderControl.addTo(newMap);
     }
 
     // If we have an initial address, set the marker
