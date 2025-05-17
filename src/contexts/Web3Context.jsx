@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+
+import { createContext, useContext, useState, useEffect } from "react";
 import { useAccount, useBalance, useReadContract, useWriteContract, useConfig, useReadContracts, usePublicClient } from 'wagmi';
 import { formatEther, parseEther } from 'viem';
 import { toast } from "sonner";
@@ -110,46 +111,18 @@ const PRICE_ORACLE_ABI = [
   }
 ];
 
-// Interface definitions
-interface NGO {
-  name: string;
-  address: string;
-  isVerified: boolean;
-}
+const Web3Context = createContext(undefined);
 
-interface NFT {
-  id: number;
-  uri: string;
-}
-
-interface Web3ContextType {
-  isConnected: boolean;
-  address: string | undefined;
-  ethBalance: string;
-  feedCoinBalance: string;
-  ngoData: NGO | null;
-  ownedNFTs: NFT[];
-  ethPrice: string;
-  isLoading: boolean;
-  registerNGO: (name: string) => Promise<void>;
-  getNGO: (ngoAddress: string) => Promise<NGO | null>;
-  donate: (ngoAddress: string, amount: string) => Promise<void>;
-  claimNFT: () => Promise<void>;
-  claimTokens: () => Promise<void>;
-}
-
-const Web3Context = createContext<Web3ContextType | undefined>(undefined);
-
-export function Web3Provider({ children }: { children: ReactNode }) {
+export function Web3Provider({ children }) {
   const { address, isConnected } = useAccount();
   const config = useConfig();
   const [isLoading, setIsLoading] = useState(false);
-  const [ngoData, setNgoData] = useState<NGO | null>(null);
-  const [ownedNFTs, setOwnedNFTs] = useState<NFT[]>([]);
+  const [ngoData, setNgoData] = useState(null);
+  const [ownedNFTs, setOwnedNFTs] = useState([]);
   const [ethPrice, setEthPrice] = useState("0");
   const publicClient = usePublicClient();
   
-  // Get ETH balance - fixed to use Wagmi v2 API
+  // Get ETH balance
   const { data: ethBalanceData } = useBalance({
     address,
     query: {
@@ -159,7 +132,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
   // Get FeedCoin balance
   const { data: feedCoinBalanceData } = useReadContract({
-    address: FEED_COIN_ADDRESS as `0x${string}`,
+    address: FEED_COIN_ADDRESS,
     abi: FEED_COIN_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
@@ -170,7 +143,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
   // Get ETH price
   const { data: ethPriceData } = useReadContract({
-    address: PRICE_ORACLE_ADDRESS as `0x${string}`,
+    address: PRICE_ORACLE_ADDRESS,
     abi: PRICE_ORACLE_ABI,
     functionName: 'getLatestPrice',
     query: {
@@ -189,7 +162,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
   }, [ethPriceData]);
 
   // Function to register NGO
-  const registerNGO = async (name: string) => {
+  const registerNGO = async (name) => {
     if (!isConnected || !address) {
       toast.error("Please connect your wallet first");
       return;
@@ -197,12 +170,13 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      // Use writeContractAsync with proper parameters for Wagmi v2
+      // Use writeContractAsync for Wagmi v2
       await writeContractAsync({
-        address: FEED_FORWARD_ADDRESS as `0x${string}`,
+        address: FEED_FORWARD_ADDRESS,
         abi: FEED_FORWARD_ABI,
         functionName: 'registerNGO',
         args: [name],
+        chainId: baseSepolia.id
       });
       
       toast.success("NGO registration submitted successfully!");
@@ -216,7 +190,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
   };
 
   // Function to get NGO data
-  const getNGO = async (ngoAddress: string): Promise<NGO | null> => {
+  const getNGO = async (ngoAddress) => {
     if (!isConnected) {
       toast.error("Please connect your wallet first");
       return null;
@@ -224,18 +198,18 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     try {
       const result = await readContract({
-        address: FEED_FORWARD_ADDRESS as `0x${string}`,
+        address: FEED_FORWARD_ADDRESS,
         abi: FEED_FORWARD_ABI,
         functionName: 'getNGO',
-        args: [ngoAddress as `0x${string}`],
+        args: [ngoAddress],
       });
       
       if (result && Array.isArray(result) && result.length === 3) {
         const [name, addr, isVerified] = result;
         return { 
-          name: name as string, 
-          address: addr as string, 
-          isVerified: isVerified as boolean 
+          name, 
+          address: addr, 
+          isVerified 
         };
       }
       return null;
@@ -246,7 +220,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
   };
 
   // Function to fetch NGO data
-  const fetchNGOData = async (ngoAddress: string) => {
+  const fetchNGOData = async (ngoAddress) => {
     const data = await getNGO(ngoAddress);
     if (data) {
       setNgoData(data);
@@ -254,7 +228,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
   };
 
   // Function to donate to NGO
-  const donate = async (ngoAddress: string, amount: string) => {
+  const donate = async (ngoAddress, amount) => {
     if (!isConnected || !address) {
       toast.error("Please connect your wallet first");
       return;
@@ -262,13 +236,14 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      // Use writeContractAsync with proper parameters for Wagmi v2
+      // Use writeContractAsync for Wagmi v2
       await writeContractAsync({
-        address: FEED_FORWARD_ADDRESS as `0x${string}`,
+        address: FEED_FORWARD_ADDRESS,
         abi: FEED_FORWARD_ABI,
         functionName: 'donate',
-        args: [ngoAddress as `0x${string}`],
+        args: [ngoAddress],
         value: parseEther(amount),
+        chainId: baseSepolia.id
       });
       
       toast.success("Donation successful!");
@@ -289,11 +264,12 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      // Use writeContractAsync with proper parameters for Wagmi v2
+      // Use writeContractAsync for Wagmi v2
       await writeContractAsync({
-        address: DONATION_NFT_ADDRESS as `0x${string}`,
+        address: DONATION_NFT_ADDRESS,
         abi: DONATION_NFT_ABI,
         functionName: 'claimNFT',
+        chainId: baseSepolia.id
       });
       
       toast.success("NFT claim submitted!");
@@ -315,11 +291,12 @@ export function Web3Provider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      // Use writeContractAsync with proper parameters for Wagmi v2
+      // Use writeContractAsync for Wagmi v2
       await writeContractAsync({
-        address: FEED_COIN_ADDRESS as `0x${string}`,
+        address: FEED_COIN_ADDRESS,
         abi: FEED_COIN_ABI,
         functionName: 'claimTokens',
+        chainId: baseSepolia.id
       });
       
       toast.success("Tokens claim submitted!");
@@ -337,13 +314,13 @@ export function Web3Provider({ children }: { children: ReactNode }) {
     
     try {
       const balance = await readContract({
-        address: DONATION_NFT_ADDRESS as `0x${string}`,
+        address: DONATION_NFT_ADDRESS,
         abi: DONATION_NFT_ABI,
         functionName: 'balanceOf',
-        args: [address as `0x${string}`],
+        args: [address],
       });
       
-      const nfts: NFT[] = [];
+      const nfts = [];
       
       // Assuming tokenIds start from 1 and are sequential
       // This is a simplification - you might need to adjust based on your contract
@@ -352,13 +329,13 @@ export function Web3Provider({ children }: { children: ReactNode }) {
       for (let i = 1; i <= balanceNumber; i++) {
         try {
           const uri = await readContract({
-            address: DONATION_NFT_ADDRESS as `0x${string}`,
+            address: DONATION_NFT_ADDRESS,
             abi: DONATION_NFT_ABI,
             functionName: 'tokenURI',
             args: [BigInt(i)], // Convert to BigInt correctly
           });
           
-          nfts.push({ id: i, uri: uri as string });
+          nfts.push({ id: i, uri });
         } catch (e) {
           console.error(`Error fetching NFT #${i}:`, e);
         }
@@ -371,7 +348,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
   };
 
   // Prepare contract call utility function - updated for compatibility
-  const readContract = async ({ address, abi, functionName, args = [] }: any) => {
+  const readContract = async ({ address, abi, functionName, args = [] }) => {
     // This is a mock implementation for demonstration purposes
     console.log(`Reading contract ${address} function ${functionName} with args:`, args);
     
