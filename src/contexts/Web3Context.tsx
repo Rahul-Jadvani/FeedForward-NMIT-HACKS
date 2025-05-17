@@ -147,7 +147,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
   const [ownedNFTs, setOwnedNFTs] = useState<NFT[]>([]);
   const [ethPrice, setEthPrice] = useState("0");
   
-  // Get ETH balance - fixed the 'watch' property issue
+  // Get ETH balance - fixed to use Wagmi v2 API
   const { data: ethBalanceData } = useBalance({
     address,
     query: {
@@ -227,7 +227,7 @@ export function Web3Provider({ children }: { children: ReactNode }) {
         args: [ngoAddress as `0x${string}`],
       });
       
-      if (result) {
+      if (result && Array.isArray(result) && result.length === 3) {
         const [name, addr, isVerified] = result;
         return { 
           name: name as string, 
@@ -341,7 +341,9 @@ export function Web3Provider({ children }: { children: ReactNode }) {
       
       // Assuming tokenIds start from 1 and are sequential
       // This is a simplification - you might need to adjust based on your contract
-      for (let i = 1; i <= Number(balance); i++) {
+      const balanceNumber = typeof balance === 'bigint' ? Number(balance) : 0;
+      
+      for (let i = 1; i <= balanceNumber; i++) {
         try {
           const uri = await readContract({
             address: DONATION_NFT_ADDRESS as `0x${string}`,
