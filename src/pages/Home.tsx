@@ -1,7 +1,7 @@
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { MapPin, ArrowRight, Award } from "lucide-react";
+import { MapPin, ArrowRight } from "lucide-react";
 import { BentoGrid } from "@/components/BentoGrid";
 
 export default function Home() {

@@ -6,13 +6,12 @@ import { ConnectWallet } from "./ConnectWallet";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { UserMenu } from "./nav/UserMenu";
 import { NotificationButton } from "./nav/NotificationButton";
-import { NavLinks } from "./nav/NavLinks";
 
 export function Navbar() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-black/60 backdrop-blur-xl supports-[backdrop-filter]:bg-black/40 border-b border-white/10 pixel-ripple">
+    <header className="sticky top-0 z-40 w-full bg-black/50 backdrop-blur-xl supports-[backdrop-filter]:bg-black/30 border-b border-white/5">
       <nav className="container flex h-16 items-center justify-between">
         <Link 
           to="/" 
@@ -21,9 +20,7 @@ export function Navbar() {
           <span className="font-bold text-2xl gradient-text font-futuristic tracking-wider">FeedForward</span>
         </Link>
 
-        <NavLinks />
-
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <ConnectWallet />
           <ThemeSwitcher />
           <NotificationButton />
