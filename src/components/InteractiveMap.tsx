@@ -6,7 +6,6 @@ import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine";
-import "../types/leaflet-extensions";
 
 // Define our interfaces
 interface FoodFlag {
