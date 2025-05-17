@@ -6,12 +6,14 @@ import "leaflet-control-geocoder/dist/Control.Geocoder.css";
 import "leaflet-control-geocoder";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine";
-import "../types/leaflet-extensions";
+import "@/types/leaflet-extensions";
 
 interface FoodFlag {
   id: string;
   title: string;
   coordinates: [number, number];
+  foodType: string;
+  expiryTime: string;
   [key: string]: any;
 }
 

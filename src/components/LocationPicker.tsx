@@ -8,7 +8,7 @@ import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine";
 import { Input } from "@/components/ui/input";
 import { FormControl } from "@/components/ui/form";
-import "../types/leaflet-extensions";
+import "@/types/leaflet-extensions";
 
 interface LocationPickerProps {
   value?: string;
