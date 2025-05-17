@@ -7,7 +7,7 @@ declare global {
       Routing: {
         control: (options: any) => any;
       };
-      Control: {
+      Control: typeof L.Control & {
         Geocoder: {
           new(options: any): any;
           Nominatim: {

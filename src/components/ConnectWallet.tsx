@@ -35,7 +35,7 @@ export function ConnectWallet() {
                 return (
                   <Button
                     onClick={openConnectModal}
-                    className="bg-transparent-black/30 backdrop-blur-md border-theme-accent text-theme-blue hover:bg-theme-accent/20 shadow-md modern-button android12-button"
+                    className="bg-gradient-to-r from-theme-green to-theme-purple text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
                   >
                     Connect Wallet
                   </Button>
