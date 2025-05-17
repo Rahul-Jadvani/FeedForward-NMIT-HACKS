@@ -23,17 +23,17 @@ export function ThemeSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon" className="relative hover:animate-pulse-subtle">
           <Palette className="h-5 w-5" />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="border border-border/50 shadow-lg animate-scale-in">
         {themes.map((t) => (
           <DropdownMenuItem
             key={t.value}
             onClick={() => setTheme(t.value)}
-            className={`${theme === t.value ? 'bg-accent' : ''} cursor-pointer`}
+            className={`${theme === t.value ? 'bg-accent' : ''} cursor-pointer transition-colors hover:bg-accent/80`}
           >
             {t.name}
           </DropdownMenuItem>

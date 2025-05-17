@@ -6,23 +6,21 @@ import { ConnectWallet } from "./ConnectWallet";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { UserMenu } from "./nav/UserMenu";
 import { NotificationButton } from "./nav/NotificationButton";
-import { DisasterAlertButton } from "./DisasterAlertButton";
 
 export function Navbar() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+    <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
       <nav className="container flex h-16 items-center justify-between">
         <Link 
           to="/" 
-          className="flex items-center space-x-2 transition-transform hover:scale-105"
+          className="flex items-center space-x-2 transition-all duration-300 hover:scale-105"
         >
           <span className="font-bold text-2xl gradient-text">FeedForward</span>
         </Link>
 
         <div className="flex items-center gap-4">
-          <DisasterAlertButton />
           <ConnectWallet />
           <ThemeSwitcher />
           <NotificationButton />
@@ -30,7 +28,7 @@ export function Navbar() {
           {isAuthenticated ? (
             <UserMenu />
           ) : (
-            <Button asChild className="hidden md:inline-flex btn-gradient animate-fade-in">
+            <Button asChild className="hidden md:inline-flex btn-gradient animate-fade-in modern-button">
               <Link to="/login">Sign In</Link>
             </Button>
           )}

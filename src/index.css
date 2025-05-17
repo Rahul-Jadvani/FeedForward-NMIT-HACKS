@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,26 +14,26 @@
     --popover: 0 0% 100%;
     --popover-foreground: 20 14.3% 4.1%;
 
-    --primary: 142.1 70.6% 45.3%;
+    --primary: 145 100% 40%;
     --primary-foreground: 144.9 80.4% 10%;
 
-    --secondary: 36 100% 50%;
-    --secondary-foreground: 38 92.7% 4.9%;
+    --secondary: 255 100% 70%;
+    --secondary-foreground: 255 100% 20%;
 
     --muted: 60 4.8% 95.9%;
     --muted-foreground: 25 5.3% 44.7%;
 
-    --accent: 60 4.8% 95.9%;
-    --accent-foreground: 24 9.8% 10%;
+    --accent: 255 100% 95%;
+    --accent-foreground: 255 100% 30%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 60 9.1% 97.8%;
 
     --border: 20 5.9% 90%;
     --input: 20 5.9% 90%;
-    --ring: 142.1 70.6% 45.3%;
+    --ring: 145 100% 40%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
   }
 
   [data-theme='dark'] {
@@ -45,16 +46,16 @@
     --popover: 20 14.3% 4.1%;
     --popover-foreground: 60 9.1% 97.8%;
 
-    --primary: 142.1 70.6% 45.3%;
+    --primary: 145 100% 40%;
     --primary-foreground: 144.9 80.4% 10%;
 
-    --secondary: 36 100% 50%;
-    --secondary-foreground: 38 92.7% 4.9%;
+    --secondary: 255 100% 70%;
+    --secondary-foreground: 255 100% 20%;
 
     --muted: 12 6.5% 15.1%;
     --muted-foreground: 24 5.4% 63.9%;
 
-    --accent: 12 6.5% 15.1%;
+    --accent: 255 70% 15%;
     --accent-foreground: 60 9.1% 97.8%;
 
     --destructive: 0 62.8% 30.6%;
@@ -62,7 +63,7 @@
 
     --border: 12 6.5% 15.1%;
     --input: 12 6.5% 15.1%;
-    --ring: 142.1 70.6% 45.3%;
+    --ring: 145 100% 40%;
   }
 
   [data-theme='forest'] {
@@ -72,9 +73,9 @@
     --card-foreground: 150 10% 97%;
     --popover: 150 45% 12%;
     --popover-foreground: 150 10% 97%;
-    --primary: 142.1 70.6% 45.3%;
+    --primary: 145 100% 40%;
     --primary-foreground: 150 10% 97%;
-    --secondary: 150 30% 20%;
+    --secondary: 255 100% 70%;
     --secondary-foreground: 150 10% 97%;
     --muted: 150 30% 20%;
     --muted-foreground: 150 15% 65%;
@@ -84,7 +85,7 @@
     --destructive-foreground: 150 10% 97%;
     --border: 150 30% 20%;
     --input: 150 30% 20%;
-    --ring: 142.1 70.6% 45.3%;
+    --ring: 145 100% 40%;
   }
 
   [data-theme='sunset'] {
@@ -94,9 +95,9 @@
     --card-foreground: 20 14.3% 4.1%;
     --popover: 25 95% 97%;
     --popover-foreground: 20 14.3% 4.1%;
-    --primary: 20.5 90.2% 48.2%;
+    --primary: 145 100% 40%;
     --primary-foreground: 60 9.1% 97.8%;
-    --secondary: 60 4.8% 95.9%;
+    --secondary: 255 100% 70%;
     --secondary-foreground: 24 9.8% 10%;
     --muted: 60 4.8% 95.9%;
     --muted-foreground: 25 5.3% 44.7%;
@@ -106,7 +107,7 @@
     --destructive-foreground: 60 9.1% 97.8%;
     --border: 20 5.9% 90%;
     --input: 20 5.9% 90%;
-    --ring: 20.5 90.2% 48.2%;
+    --ring: 145 100% 40%;
   }
 
   [data-theme='ocean'] {
@@ -116,9 +117,9 @@
     --card-foreground: 210 40% 98%;
     --popover: 217 76% 12%;
     --popover-foreground: 210 40% 98%;
-    --primary: 199 89% 48%;
+    --primary: 145 100% 40%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 217 40% 20%;
+    --secondary: 255 100% 70%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217 40% 20%;
     --muted-foreground: 215 20.2% 65.1%;
@@ -128,7 +129,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 217 40% 20%;
     --input: 217 40% 20%;
-    --ring: 199 89% 48%;
+    --ring: 145 100% 40%;
   }
 }
 
@@ -141,10 +142,10 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   .gradient-text {
-    @apply bg-gradient-to-r from-ff-green to-ff-orange bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-ff-green to-ff-purple bg-clip-text text-transparent;
   }
   .btn-gradient {
-    @apply bg-gradient-to-r from-ff-green to-ff-orange hover:from-ff-light-green hover:to-ff-light-orange text-white font-semibold transition-all;
+    @apply bg-gradient-to-r from-ff-green to-ff-purple hover:from-ff-light-green hover:to-ff-light-purple text-white font-semibold transition-all;
   }
 
   .animate-fade-in {
@@ -157,6 +158,27 @@
 
   .animate-scale {
     @apply hover:scale-105 transition-transform duration-200;
+  }
+  
+  /* Modern UI additions */
+  .glass-card {
+    @apply bg-background/80 backdrop-blur-md border border-border/50 shadow-lg;
+  }
+  
+  .modern-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+  
+  .modern-button {
+    @apply rounded-xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5;
+  }
+  
+  .pulse-on-hover {
+    @apply hover:animate-pulse-subtle;
+  }
+  
+  .float-animation {
+    @apply animate-float;
   }
 
   @keyframes fadeIn {
