@@ -13,8 +13,9 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  // Use a function for the initial state to avoid direct localStorage access during SSR
   const [theme, setTheme] = useState<Theme>(() => {
-    // Try to use stored theme first, but default to dark if none exists
+    // Only access localStorage on the client side
     if (typeof window !== 'undefined') {
       const storedTheme = localStorage.getItem('theme');
       return (storedTheme === 'light' ? 'light' : 'dark');
@@ -24,12 +25,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   
   const [isEditingLayout, setIsEditingLayout] = useState<boolean>(false);
 
+  // Apply theme effects
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      // Save theme to localStorage
       localStorage.setItem('theme', theme);
+      
+      // Update data-theme attribute
       document.documentElement.setAttribute('data-theme', theme);
       
-      // Apply dark class for dark theme
+      // Update dark class for Tailwind
       if (theme === 'dark') {
         document.documentElement.classList.add('dark');
       } else {
@@ -38,13 +43,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, [theme]);
 
+  // Create a stable context value object
+  const contextValue = React.useMemo(() => ({
+    theme,
+    setTheme,
+    isEditingLayout,
+    setIsEditingLayout
+  }), [theme, isEditingLayout]);
+
   return (
-    <ThemeContext.Provider value={{ 
-      theme, 
-      setTheme, 
-      isEditingLayout, 
-      setIsEditingLayout 
-    }}>
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );

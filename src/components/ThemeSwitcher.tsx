@@ -23,7 +23,7 @@ export function ThemeSwitcher() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative w-9 h-9 rounded-full bg-background/50 backdrop-blur-sm border border-border/50 transition-all duration-300 hover:shadow-glow hover:animate-pulse-subtle">
           {theme === 'dark' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-          <span className="sr-only">Select theme</span>
+          <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="border border-border/50 shadow-lg animate-scale-in bg-background/90 backdrop-blur-md">
