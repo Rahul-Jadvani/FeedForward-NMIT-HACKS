@@ -1,55 +1,22 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 210 80% 80%; /* #99BDFF (lighter) */
-    --foreground: 218 44% 12%; /* #101C2C */
+    --background: 218 44% 12%; /* #101C2C dark background */
+    --foreground: 210 80% 80%; /* #99BDFF lighter blue */
 
     --card: 0 0% 0% / 0.1; /* Transparent black */
-    --card-foreground: 218 44% 12%; /* #101C2C */
+    --card-foreground: 210 80% 80%; /* #99BDFF */
 
     --popover: 0 0% 0% / 0.1; /* Transparent black */
-    --popover-foreground: 218 44% 12%; /* #101C2C */
+    --popover-foreground: 210 80% 80%; /* #99BDFF */
 
     --primary: 145 100% 40%; /* #00CC52 (green) */
     --primary-foreground: 144.9 80.4% 10%;
 
     --secondary: 255 100% 70%; /* #6b5cff (purple) */
-    --secondary-foreground: 255 100% 98%;
-
-    --muted: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --muted-foreground: 218 44% 22%;
-
-    --accent: 213 22% 60% / 0.2; /* #6884CA with transparency */
-    --accent-foreground: 218 44% 12%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 60 9.1% 97.8%;
-
-    --border: 213 22% 60% / 0.3; /* #6884CA with transparency */
-    --input: 213 22% 60% / 0.3; /* #6884CA with transparency */
-    --ring: 145 100% 40%; /* #00CC52 */
-
-    --radius: 1rem;
-  }
-
-  [data-theme='dark'] {
-    --background: 218 44% 12%; /* #101C2C */
-    --foreground: 210 80% 80%; /* #99BDFF */
-
-    --card: 0 0% 100% / 0.1; /* Transparent white */
-    --card-foreground: 210 80% 80%; /* #99BDFF */
-
-    --popover: 0 0% 100% / 0.1; /* Transparent white */
-    --popover-foreground: 210 80% 80%; /* #99BDFF */
-
-    --primary: 145 100% 40%; /* #00CC52 */
-    --primary-foreground: 144.9 80.4% 10%;
-
-    --secondary: 255 100% 70%; /* #6b5cff */
     --secondary-foreground: 255 100% 98%;
 
     --muted: 213 22% 60% / 0.2; /* #6884CA with transparency */
@@ -64,9 +31,56 @@
     --border: 213 22% 60% / 0.3; /* #6884CA with transparency */
     --input: 213 22% 60% / 0.3; /* #6884CA with transparency */
     --ring: 145 100% 40%; /* #00CC52 */
+
+    --radius: 1.25rem; /* Pixel-style rounded corners */
   }
 
-  /* Keep other theme variations but update them with our new color scheme */
+  /* Keep existing theme variations but update them with our new color scheme */
+  [data-theme='light'] {
+    --background: 210 80% 98%; /* Very light blue */
+    --foreground: 218 44% 12%; /* #101C2C */
+    --card: 0 0% 0% / 0.1; /* Transparent black */
+    --card-foreground: 218 44% 12%; /* #101C2C */
+    --popover: 0 0% 0% / 0.1; /* Transparent black */
+    --popover-foreground: 218 44% 12%; /* #101C2C */
+    --primary: 145 100% 40%; /* #00CC52 */
+    --primary-foreground: 218 44% 12%; /* #101C2C */
+    --secondary: 255 100% 70%; /* #6b5cff */
+    --secondary-foreground: 218 44% 12%; /* #101C2C */
+    --muted: 213 22% 60% / 0.2; /* #6884CA with transparency */
+    --muted-foreground: 213 22% 45%;
+    --accent: 213 22% 60% / 0.2; /* #6884CA with transparency */
+    --accent-foreground: 218 44% 12%; /* #101C2C */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 213 22% 60% / 0.3; /* #6884CA with transparency */
+    --input: 213 22% 60% / 0.3; /* #6884CA with transparency */
+    --ring: 145 100% 40%; /* #00CC52 */
+  }
+
+  [data-theme='dark'] {
+    --background: 218 44% 12%; /* #101C2C */
+    --foreground: 210 80% 80%; /* #99BDFF */
+    --card: 0 0% 100% / 0.1; /* Transparent white */
+    --card-foreground: 210 80% 80%; /* #99BDFF */
+    --popover: 0 0% 100% / 0.1; /* Transparent white */
+    --popover-foreground: 210 80% 80%; /* #99BDFF */
+    --primary: 145 100% 40%; /* #00CC52 */
+    --primary-foreground: 144.9 80.4% 10%;
+    --secondary: 255 100% 70%; /* #6b5cff */
+    --secondary-foreground: 255 100% 98%;
+    --muted: 213 22% 60% / 0.2; /* #6884CA with transparency */
+    --muted-foreground: 213 22% 75%;
+    --accent: 213 22% 60% / 0.2; /* #6884CA with transparency */
+    --accent-foreground: 210 80% 80%; /* #99BDFF */
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 213 22% 60% / 0.3; /* #6884CA with transparency */
+    --input: 213 22% 60% / 0.3; /* #6884CA with transparency */
+    --ring: 145 100% 40%; /* #00CC52 */
+  }
+  
+  /* Keep other theme variations */
   [data-theme='forest'] {
     --background: 218 44% 12%; /* #101C2C */
     --foreground: 145 100% 40%; /* #00CC52 */
@@ -138,9 +152,11 @@
   * {
     @apply border-border;
   }
-  body {
-    @apply bg-background text-foreground;
+  
+  html, body {
+    @apply bg-black text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    scroll-behavior: smooth;
   }
   
   /* Add transparent background with borders to card-like components */
@@ -150,19 +166,19 @@
   .dropdown-content,
   .dialog-content,
   .sheet-content {
-    @apply bg-card/80 backdrop-blur-md border border-border/50 shadow-lg;
+    @apply bg-card/80 backdrop-blur-md border border-border/50 shadow-lg rounded-xl;
   }
   
-  /* Add styling for input elements to make them visible on dark backgrounds */
+  /* Add styling for input elements */
   input, 
   select, 
   textarea {
-    @apply bg-popover/80 border border-border/50;
+    @apply bg-transparent border border-border/50 rounded-xl text-foreground;
   }
   
-  /* Add styling for buttons to make them more visible */
+  /* Add styling for buttons */
   button {
-    @apply border border-border/50;
+    @apply border border-border/50 rounded-full transition-all duration-300;
   }
   
   /* Keep existing utility classes */
@@ -189,7 +205,7 @@
   
   /* Modern UI additions - updated with our theme */
   .glass-card {
-    @apply bg-card/80 backdrop-blur-md border border-border/50 shadow-lg;
+    @apply bg-card/80 backdrop-blur-md border border-border/50 shadow-lg rounded-xl;
   }
   
   .modern-hover {
@@ -197,7 +213,13 @@
   }
   
   .modern-button {
-    @apply rounded-xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5;
+    @apply rounded-full border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5;
+  }
+  
+  .pixel-button {
+    @apply rounded-full bg-card/80 backdrop-blur-md border border-border/50 px-6 py-3 
+    transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 
+    active:shadow-sm active:scale-[0.98];
   }
   
   .pulse-on-hover {
@@ -208,6 +230,38 @@
     @apply animate-float;
   }
 
+  /* Android 12 / Pixel inspired UI elements */
+  .android12-card {
+    @apply bg-card/80 backdrop-blur-md border border-border/50 shadow-lg rounded-3xl 
+    transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 p-6;
+  }
+  
+  .android12-button {
+    @apply bg-theme-accent/20 backdrop-blur-md text-theme-blue border border-theme-accent/30 
+    rounded-full px-6 py-3 font-medium transition-all duration-200 hover:bg-theme-accent/30 
+    hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm active:scale-[0.98];
+  }
+  
+  .android12-pill {
+    @apply bg-theme-dark/50 border border-theme-accent/20 rounded-full px-4 py-1.5 text-sm font-medium text-theme-blue;
+  }
+  
+  .android12-switch {
+    @apply relative w-12 h-6 rounded-full bg-theme-accent/20 transition-colors duration-200;
+  }
+  
+  .android12-switch::before {
+    @apply content-[''] absolute w-5 h-5 rounded-full bg-theme-blue top-0.5 left-0.5 transition-transform duration-200;
+  }
+  
+  .android12-switch.active {
+    @apply bg-theme-green/20;
+  }
+  
+  .android12-switch.active::before {
+    @apply transform translate-x-6 bg-theme-green;
+  }
+  
   /* Keep existing keyframe animations */
   @keyframes fadeIn {
     from {

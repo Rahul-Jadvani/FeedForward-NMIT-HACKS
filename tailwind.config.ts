@@ -53,6 +53,7 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         // Custom theme colors
+        black: "#000000",
         "theme-blue": "#99BDFF",
         "theme-green": "#00CC52",
         "theme-purple": "#6b5cff",
@@ -64,6 +65,10 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xl: "1.25rem",
+        "2xl": "1.5rem",
+        "3xl": "1.75rem",
+        full: "9999px",
       },
       keyframes: {
         "accordion-down": {
@@ -94,6 +99,10 @@ export default {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.8" }
         },
+        "ripple": {
+          "0%": { transform: "scale(0)", opacity: "0.6" },
+          "100%": { transform: "scale(4)", opacity: "0" }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -103,6 +112,15 @@ export default {
         "scale-in": "scale-in 0.2s ease-out",
         "float": "float 3s ease-in-out infinite",
         "pulse-subtle": "pulse-subtle 2s ease-in-out infinite",
+        "ripple": "ripple 0.6s linear",
+      },
+      backdropFilter: {
+        'none': 'none',
+        'blur': 'blur(8px)',
+      },
+      boxShadow: {
+        'pixel': '0 2px 8px rgba(0, 0, 0, 0.15)',
+        'pixel-hover': '0 4px 12px rgba(0, 0, 0, 0.2)',
       },
     },
   },

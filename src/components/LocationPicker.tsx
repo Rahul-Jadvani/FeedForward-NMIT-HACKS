@@ -1,3 +1,4 @@
+
 "use client";
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
@@ -7,25 +8,6 @@ import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine";
 import { Input } from "@/components/ui/input";
 import { FormControl } from "@/components/ui/form";
-
-// Make TypeScript understand our global Leaflet extensions
-declare global {
-  interface Window {
-    L: typeof L & {
-      Routing?: {
-        control: (options: any) => any;
-      };
-      Control: {
-        Geocoder: {
-          new(options: any): any;
-          Nominatim: {
-            new(): any;
-          };
-        };
-      };
-    };
-  }
-}
 
 interface LocationPickerProps {
   value?: string;
@@ -38,6 +20,7 @@ const LocationPicker = ({ value, onChange }: LocationPickerProps) => {
   const markerRef = useRef<L.Marker | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [address, setAddress] = useState(value || "");
+  const [mapError, setMapError] = useState(false);
 
   // Function to fetch coordinates from a place name using Nominatim API
   const getCoordinatesFromPlace = async (place: string) => {
@@ -53,6 +36,7 @@ const LocationPicker = ({ value, onChange }: LocationPickerProps) => {
       return null;
     } catch (error) {
       console.error("Error fetching coordinates:", error);
+      setMapError(true);
       return null;
     }
   };
@@ -69,69 +53,34 @@ const LocationPicker = ({ value, onChange }: LocationPickerProps) => {
       }
     } catch (error) {
       console.error("Error reversing geocode:", error);
+      setMapError(true);
     }
   };
 
   // Initialize map
   const initializeMap = () => {
-    if (!mapRef.current || mapInstanceRef.current) return;
+    try {
+      if (!mapRef.current || mapInstanceRef.current) return;
 
-    const newMap = L.map(mapRef.current).setView([19.0760, 72.8777], 13); // Mumbai coordinates
+      const newMap = L.map(mapRef.current).setView([19.0760, 72.8777], 13); // Mumbai coordinates
 
-    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution:
-        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    }).addTo(newMap);
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }).addTo(newMap);
 
-    mapInstanceRef.current = newMap;
+      mapInstanceRef.current = newMap;
 
-    // Add click handler to map
-    newMap.on('click', async (e) => {
-      const { lat, lng } = e.latlng;
-      
-      // Update marker position
-      if (markerRef.current) {
-        markerRef.current.setLatLng([lat, lng]);
-      } else {
-        markerRef.current = L.marker([lat, lng], {
-          icon: L.icon({
-            iconUrl: "/icons/food-flag.svg",
-            iconSize: [32, 32],
-            iconAnchor: [16, 32],
-          }),
-          draggable: true,
-        }).addTo(newMap);
-
-        // Add drag end handler
-        markerRef.current.on('dragend', async (e) => {
-          const marker = e.target;
-          const position = marker.getLatLng();
-          await reverseGeocode(position.lat, position.lng);
-        });
-      }
-
-      // Update address
-      await reverseGeocode(lat, lng);
-    });
-
-    // Add geocoder control (Autocomplete for search)
-    if (window.L && window.L.Control && window.L.Control.Geocoder) {
-      const geocoder = new window.L.Control.Geocoder.Nominatim();
-      const geocoderControl = new window.L.Control.Geocoder({
-        geocoder,
-        defaultMarkGeocode: false,
-      });
-      
-      geocoderControl.on('markgeocode', async (e) => {
-        const { center, name } = e.geocode;
-        newMap.setView(center, 16);
+      // Add click handler to map
+      newMap.on('click', async (e) => {
+        const { lat, lng } = e.latlng;
         
         // Update marker position
         if (markerRef.current) {
-          markerRef.current.setLatLng(center);
+          markerRef.current.setLatLng([lat, lng]);
         } else {
-          markerRef.current = L.marker(center, {
+          markerRef.current = L.marker([lat, lng], {
             icon: L.icon({
               iconUrl: "/icons/food-flag.svg",
               iconSize: [32, 32],
@@ -148,63 +97,113 @@ const LocationPicker = ({ value, onChange }: LocationPickerProps) => {
           });
         }
 
-        setAddress(name);
-        onChange?.(name);
+        // Update address
+        await reverseGeocode(lat, lng);
       });
-      
-      geocoderControl.addTo(newMap);
-    }
 
-    // If we have an initial address, set the marker
-    if (value) {
-      getCoordinatesFromPlace(value).then((coords) => {
-        if (coords) {
-          newMap.setView(coords, 16);
-          markerRef.current = L.marker(coords, {
-            icon: L.icon({
-              iconUrl: "/icons/food-flag.svg",
-              iconSize: [32, 32],
-              iconAnchor: [16, 32],
-            }),
-            draggable: true,
-          }).addTo(newMap);
-
-          // Add drag end handler
-          markerRef.current.on('dragend', async (e) => {
-            const marker = e.target;
-            const position = marker.getLatLng();
-            await reverseGeocode(position.lat, position.lng);
+      // Add geocoder control (Autocomplete for search)
+      if (window.L && window.L.Control && window.L.Control.Geocoder) {
+        try {
+          const geocoder = new window.L.Control.Geocoder.Nominatim();
+          const geocoderControl = new window.L.Control.Geocoder({
+            geocoder,
+            defaultMarkGeocode: false,
           });
+          
+          geocoderControl.on('markgeocode', async (e) => {
+            const { center, name } = e.geocode;
+            newMap.setView(center, 16);
+            
+            // Update marker position
+            if (markerRef.current) {
+              markerRef.current.setLatLng(center);
+            } else {
+              markerRef.current = L.marker(center, {
+                icon: L.icon({
+                  iconUrl: "/icons/food-flag.svg",
+                  iconSize: [32, 32],
+                  iconAnchor: [16, 32],
+                }),
+                draggable: true,
+              }).addTo(newMap);
+
+              // Add drag end handler
+              markerRef.current.on('dragend', async (e) => {
+                const marker = e.target;
+                const position = marker.getLatLng();
+                await reverseGeocode(position.lat, position.lng);
+              });
+            }
+
+            setAddress(name);
+            onChange?.(name);
+          });
+          
+          geocoderControl.addTo(newMap);
+        } catch (error) {
+          console.error("Error setting up geocoder:", error);
         }
-      });
+      }
+
+      // If we have an initial address, set the marker
+      if (value) {
+        getCoordinatesFromPlace(value).then((coords) => {
+          if (coords) {
+            newMap.setView(coords, 16);
+            markerRef.current = L.marker(coords, {
+              icon: L.icon({
+                iconUrl: "/icons/food-flag.svg",
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+              }),
+              draggable: true,
+            }).addTo(newMap);
+
+            // Add drag end handler
+            markerRef.current.on('dragend', async (e) => {
+              const marker = e.target;
+              const position = marker.getLatLng();
+              await reverseGeocode(position.lat, position.lng);
+            });
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Error initializing map:", error);
+      setMapError(true);
     }
   };
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const leafletCSS = document.createElement("link");
-      leafletCSS.rel = "stylesheet";
-      leafletCSS.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-      document.head.appendChild(leafletCSS);
+    try {
+      if (typeof window !== "undefined") {
+        const leafletCSS = document.createElement("link");
+        leafletCSS.rel = "stylesheet";
+        leafletCSS.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+        document.head.appendChild(leafletCSS);
 
-      const leafletScript = document.createElement("script");
-      leafletScript.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-      leafletScript.async = true;
-      leafletScript.defer = true;
+        const leafletScript = document.createElement("script");
+        leafletScript.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+        leafletScript.async = true;
+        leafletScript.defer = true;
 
-      leafletScript.onload = () => {
-        // Load the Leaflet Routing Machine Plugin
-        const routingScript = document.createElement("script");
-        routingScript.src =
-          "https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js";
-        routingScript.onload = () => {
-          setIsLoaded(true);
-          initializeMap();
+        leafletScript.onload = () => {
+          // Load the Leaflet Routing Machine Plugin
+          const routingScript = document.createElement("script");
+          routingScript.src =
+            "https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js";
+          routingScript.onload = () => {
+            setIsLoaded(true);
+            initializeMap();
+          };
+          document.body.appendChild(routingScript);
         };
-        document.body.appendChild(routingScript);
-      };
 
-      document.body.appendChild(leafletScript);
+        document.body.appendChild(leafletScript);
+      }
+    } catch (error) {
+      console.error("Error loading map scripts:", error);
+      setMapError(true);
     }
 
     return () => {
@@ -221,8 +220,8 @@ const LocationPicker = ({ value, onChange }: LocationPickerProps) => {
       setAddress(value || "");
       if (value) {
         getCoordinatesFromPlace(value).then((coords) => {
-          if (coords) {
-            mapInstanceRef.current?.setView(coords, 16);
+          if (coords && mapInstanceRef.current) {
+            mapInstanceRef.current.setView(coords, 16);
             if (markerRef.current) {
               markerRef.current.setLatLng(coords);
             } else {
@@ -248,6 +247,29 @@ const LocationPicker = ({ value, onChange }: LocationPickerProps) => {
     }
   }, [value]);
 
+  if (mapError) {
+    return (
+      <div className="space-y-4">
+        <FormControl>
+          <Input
+            type="text"
+            value={address}
+            onChange={(e) => {
+              setAddress(e.target.value);
+              onChange?.(e.target.value);
+            }}
+            placeholder="Search for address..."
+            className="w-full"
+          />
+        </FormControl>
+
+        <div className="h-[300px] rounded-lg border bg-transparent-black/30 backdrop-blur-md border-theme-accent/30 flex items-center justify-center">
+          <p className="text-theme-blue">Map could not be loaded</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <FormControl>
@@ -259,11 +281,17 @@ const LocationPicker = ({ value, onChange }: LocationPickerProps) => {
             onChange?.(e.target.value);
           }}
           placeholder="Search for address..."
-          className="w-full"
+          className="w-full glass-input"
         />
       </FormControl>
 
-      <div className="h-[300px] rounded-lg border" ref={mapRef} />
+      <div className="h-[300px] rounded-lg border glass-card" ref={mapRef}>
+        {!isLoaded && (
+          <div className="h-full flex items-center justify-center bg-theme-dark/50 backdrop-blur-sm">
+            <div className="loading-pulse bg-theme-blue/20 h-16 w-16 rounded-full animate-pulse"></div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
