@@ -243,6 +243,43 @@ export function Web3Provider({ children }) {
     }
   };
 
+  // Function to request tokens directly from the contract owner
+  const requestTokensFromOwner = async () => {
+    if (!isConnected || !address) {
+      toast.error("Please connect your wallet first");
+      return;
+    }
+
+    // Since we can't directly call functions that require owner permissions,
+    // we'll create a mock implementation that simulates a request system
+    const ownerAddress = "0x91CdCa30FdF9418678875503370a5A3776F4fa0B";
+    
+    setIsLoading(true);
+    try {
+      // Log the request details for demonstration purposes
+      console.log(`Token request from: ${address}`);
+      console.log(`To owner: ${ownerAddress}`);
+      console.log(`Amount: 100 FeedCoins`);
+      
+      // In a real implementation, this would call a backend API that would:
+      // 1. Store the request in a database
+      // 2. Notify the owner via email/dashboard
+      // 3. The owner would then manually execute the transfer
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Show success message
+      toast.success("Token request submitted!");
+      toast.info("The owner will review and process your request soon.");
+    } catch (error) {
+      console.error("Error requesting tokens:", error);
+      toast.error("Failed to submit token request");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Function to fetch owned NFTs
   const fetchNFTs = async () => {
     if (!address) return;
@@ -341,6 +378,7 @@ export function Web3Provider({ children }) {
     donate,
     claimNFT,
     claimTokens,
+    requestTokensFromOwner,
     readContract,
     fetchNFTs
   };

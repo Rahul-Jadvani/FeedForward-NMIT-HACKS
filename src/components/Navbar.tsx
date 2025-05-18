@@ -19,7 +19,7 @@ export function Navbar() {
   // Use real feedCoin balance if connected to blockchain, otherwise fallback to mock data
   const feedCoinBalanceDisplay = isConnected ? 
     parseFloat(feedCoinBalance).toFixed(2) : 
-    "125";
+    "0";
 
   return (
     <header className="sticky top-0 z-40 w-full bg-transparent backdrop-blur-sm border-b border-border/40">

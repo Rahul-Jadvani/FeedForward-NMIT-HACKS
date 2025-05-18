@@ -39,7 +39,7 @@ export default function WalletPage() {
     feedCoinBalance: web3FeedCoinBalance, 
     ethBalance,
     isLoading: web3Loading,
-    claimTokens
+    requestTokensFromOwner
   } = useWeb3();
   const [activeTab, setActiveTab] = useState<string>("balance");
   const [isLoading, setIsLoading] = useState(true);
@@ -89,7 +89,7 @@ export default function WalletPage() {
         ]);
       } else {
         // Fallback to mock data if not connected to blockchain
-        setFeedCoinBalance(350);
+        setFeedCoinBalance(0);
         setTransactions([{
             id: "tx-001",
             type: "earned",
@@ -141,12 +141,12 @@ export default function WalletPage() {
     }
   };
   
-  // Function to claim tokens from the FeedCoin contract
+  // Function to request tokens from the owner
   const handleClaimTokens = async () => {
     if (!isConnected) {
       toast({
         title: "Wallet not connected",
-        description: "Please connect your wallet to claim tokens",
+        description: "Please connect your wallet to request tokens",
         variant: "destructive"
       });
       return;
@@ -154,32 +154,30 @@ export default function WalletPage() {
     
     setClaimingTokens(true);
     try {
-      await claimTokens();
+      // Using requestTokensFromOwner function
+      await requestTokensFromOwner();
       
       // Add a new transaction to the list
       const newTransaction: Transaction = {
         id: `tx-${Date.now()}`,
         type: "earned",
-        amount: 100, // Example amount
-        description: "Claimed FeedCoin tokens",
+        amount: 100, // 100 tokens
+        description: "Requested FeedCoin tokens",
         date: new Date().toISOString().split('T')[0],
-        status: "completed"
+        status: "pending"
       };
       
       setTransactions(prev => [newTransaction, ...prev]);
       
-      toast({
-        title: "Tokens claimed successfully",
-        description: "Your FeedCoin tokens have been claimed"
-      });
+      // No need for additional toast as the requestTokensFromOwner function already shows toasts
       
-      // Refresh the wallet after claiming
+      // Refresh the wallet after requesting
       handleRefresh();
     } catch (error) {
-      console.error("Error claiming tokens:", error);
+      console.error("Error requesting tokens:", error);
       toast({
-        title: "Claim failed",
-        description: "Failed to claim tokens. Please try again.",
+        title: "Request failed",
+        description: "Failed to request tokens. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -388,15 +386,15 @@ export default function WalletPage() {
               </div>
               
               {/* Claim Tokens Button - This will trigger an actual blockchain transaction */}
-              <div className="p-4 border rounded-md hover:bg-muted transition-colors bg-green-50">
+              <div className="p-4 border rounded-md hover:bg-muted transition-colors bg-muted">
                 <div className="flex justify-between items-center">
-                  <div className="font-medium">Claim FeedCoins</div>
+                  <div className="font-medium">Request FeedCoins</div>
                   <Badge variant="outline" className="bg-green-100 text-green-700">
                     +100 FC
                   </Badge>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Claim your FeedCoin tokens from the contract
+                  Request FeedCoin tokens from the contract owner
                 </p>
                 <Button 
                   variant="default" 
@@ -405,7 +403,7 @@ export default function WalletPage() {
                   onClick={handleClaimTokens}
                   disabled={claimingTokens || !isConnected}
                 >
-                  {claimingTokens ? "Claiming..." : "Claim Tokens"}
+                  {claimingTokens ? "Requesting..." : "Request Tokens"}
                 </Button>
               </div>
             </CardContent>
