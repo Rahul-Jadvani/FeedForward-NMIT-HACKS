@@ -361,6 +361,104 @@ export function Web3Provider({ children }) {
     }
   };
 
+  // Function to fetch token transaction history
+  const fetchTokenTransactions = async () => {
+    if (!address || !publicClient) return [];
+    
+    try {
+      // In a real implementation, we would use an indexer or blockchain explorer API
+      // to fetch the complete transaction history for the token
+      // For this demo, we'll simulate fetching Transfer events from the contract
+      
+      // Get the latest block number
+      const latestBlock = await publicClient.getBlockNumber();
+      
+      // Calculate the starting block (e.g., last 1000 blocks)
+      const fromBlock = latestBlock - BigInt(1000) > 0 ? latestBlock - BigInt(1000) : BigInt(0);
+      
+      // Fetch Transfer events where the user is either sender or receiver
+      const sentEvents = await publicClient.getLogs({
+        address: FEED_COIN_ADDRESS,
+        event: {
+          type: 'event',
+          name: 'Transfer',
+          inputs: [
+            { indexed: true, name: 'from', type: 'address' },
+            { indexed: true, name: 'to', type: 'address' },
+            { indexed: false, name: 'value', type: 'uint256' }
+          ]
+        },
+        args: {
+          from: address
+        },
+        fromBlock,
+        toBlock: latestBlock
+      }).catch(error => {
+        console.error("Error fetching sent events:", error);
+        return [];
+      });
+      
+      const receivedEvents = await publicClient.getLogs({
+        address: FEED_COIN_ADDRESS,
+        event: {
+          type: 'event',
+          name: 'Transfer',
+          inputs: [
+            { indexed: true, name: 'from', type: 'address' },
+            { indexed: true, name: 'to', type: 'address' },
+            { indexed: false, name: 'value', type: 'uint256' }
+          ]
+        },
+        args: {
+          to: address
+        },
+        fromBlock,
+        toBlock: latestBlock
+      }).catch(error => {
+        console.error("Error fetching received events:", error);
+        return [];
+      });
+      
+      // Process the events into a format suitable for the UI
+      const processedSentEvents = await Promise.all(sentEvents.map(async (event) => {
+        const block = await publicClient.getBlock({ blockHash: event.blockHash });
+        return {
+          id: `${event.transactionHash}-${event.logIndex}`,
+          type: "spent",
+          amount: Number(formatEther(event.args.value)),
+          description: `Sent to ${event.args.to.substring(0, 6)}...${event.args.to.substring(event.args.to.length - 4)}`,
+          date: new Date(Number(block.timestamp) * 1000).toISOString().split('T')[0],
+          status: "completed",
+          transactionHash: event.transactionHash
+        };
+      }));
+      
+      const processedReceivedEvents = await Promise.all(receivedEvents.map(async (event) => {
+        const block = await publicClient.getBlock({ blockHash: event.blockHash });
+        return {
+          id: `${event.transactionHash}-${event.logIndex}`,
+          type: event.args.from === '0x0000000000000000000000000000000000000000' ? "earned" : "received",
+          amount: Number(formatEther(event.args.value)),
+          description: event.args.from === '0x0000000000000000000000000000000000000000' 
+            ? "Minted tokens" 
+            : `Received from ${event.args.from.substring(0, 6)}...${event.args.from.substring(event.args.from.length - 4)}`,
+          date: new Date(Number(block.timestamp) * 1000).toISOString().split('T')[0],
+          status: "completed",
+          transactionHash: event.transactionHash
+        };
+      }));
+      
+      // Combine and sort by date (most recent first)
+      const allTransactions = [...processedSentEvents, ...processedReceivedEvents];
+      allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      return allTransactions;
+    } catch (error) {
+      console.error("Error fetching token transactions:", error);
+      return [];
+    }
+  };
+
   // Prepare contract call utility function - using publicClient for direct blockchain interactions
   const readContract = async ({ address, abi, functionName, args = [] }) => {
     if (!publicClient || !address) {
@@ -423,7 +521,8 @@ export function Web3Provider({ children }) {
     requestTokensFromOwner,
     sendTokens,
     readContract,
-    fetchNFTs
+    fetchNFTs,
+    fetchTokenTransactions
   };
 
   return (

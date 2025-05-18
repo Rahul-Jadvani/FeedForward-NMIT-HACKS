@@ -51,7 +51,8 @@ export default function WalletPage() {
     ethBalance,
     isLoading: web3Loading,
     requestTokensFromOwner,
-    sendTokens
+    sendTokens,
+    fetchTokenTransactions
   } = useWeb3();
   const [activeTab, setActiveTab] = useState<string>("balance");
   const [isLoading, setIsLoading] = useState(true);
@@ -59,6 +60,7 @@ export default function WalletPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [claimingTokens, setClaimingTokens] = useState(false);
+  const [loadingTransactions, setLoadingTransactions] = useState(false);
   
   // Send tokens state
   const [sendDialogOpen, setSendDialogOpen] = useState(false);
@@ -87,24 +89,8 @@ export default function WalletPage() {
         const balanceNumber = parseFloat(web3FeedCoinBalance);
         setFeedCoinBalance(balanceNumber);
         
-        // Keep some mock transactions for now, but we can replace these with real ones later
-        setTransactions([{
-            id: "tx-001",
-            type: "earned",
-            amount: 50,
-            description: "Donation: Corporate Lunch Leftovers",
-            date: "2025-04-23",
-            status: "completed"
-          },
-          {
-            id: "tx-002",
-            type: "earned",
-            amount: 30,
-            description: "Achievement: First-Time Donor",
-            date: "2025-04-20",
-            status: "completed"
-          }
-        ]);
+        // Fetch real transaction history
+        fetchTransactionHistory();
       } else {
         // Fallback to mock data if not connected to blockchain
         setFeedCoinBalance(0);
@@ -125,19 +111,44 @@ export default function WalletPage() {
             status: "completed"
           }
         ]);
+        setIsLoading(false);
       }
-      setIsLoading(false);
     }
   }, [isAuthenticated, isConnected, web3FeedCoinBalance]);
+  
+  // Function to fetch transaction history
+  const fetchTransactionHistory = async () => {
+    if (!isConnected || !address) return;
+    
+    setLoadingTransactions(true);
+    try {
+      const txHistory = await fetchTokenTransactions();
+      if (txHistory && txHistory.length > 0) {
+        setTransactions(txHistory);
+      } else {
+        // If no transactions found, show a placeholder
+        setTransactions([]);
+      }
+    } catch (error) {
+      console.error("Error fetching transaction history:", error);
+      toast({
+        title: "Error fetching transactions",
+        description: "Could not load your transaction history",
+        variant: "destructive"
+      });
+    } finally {
+      setLoadingTransactions(false);
+      setIsLoading(false);
+    }
+  };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
       // If connected to blockchain, we can refresh the real data
       if (isConnected) {
-        // Here you would typically call functions to refresh blockchain data
-        // For now, we'll just wait a bit to simulate the refresh
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Fetch real transaction history
+        await fetchTransactionHistory();
       } else {
         // Mock refresh for non-connected users
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -390,7 +401,7 @@ export default function WalletPage() {
               <CardDescription>Your recent FeedCoin activity</CardDescription>
             </CardHeader>
             <CardContent>
-              {isLoading ? (
+              {isLoading || loadingTransactions ? (
                 <div className="flex justify-center items-center h-40">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
@@ -399,7 +410,9 @@ export default function WalletPage() {
                   <History className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                   <p>No transactions yet</p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Start donating or claiming food to earn FeedCoins
+                    {isConnected ? 
+                      "No token transactions found on the blockchain" : 
+                      "Connect your wallet to see your transaction history"}
                   </p>
                 </div>
               ) : (
@@ -424,8 +437,14 @@ export default function WalletPage() {
               )}
             </CardContent>
             <CardFooter className="border-t pt-4">
-              <Button variant="outline" size="sm" className="w-full">
-                View All Transactions
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full"
+                onClick={fetchTransactionHistory}
+                disabled={loadingTransactions || !isConnected}
+              >
+                {loadingTransactions ? "Loading..." : "Refresh Transactions"}
               </Button>
             </CardFooter>
           </Card>
