@@ -1,115 +1,21 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 import { useAccount, useBalance, useReadContract, useWriteContract, useConfig, useReadContracts, usePublicClient } from 'wagmi';
+import { readContract } from 'wagmi/actions';
 import { formatEther, parseEther } from 'viem';
 import { toast } from "sonner";
 import { baseSepolia } from 'wagmi/chains';
 
-// Smart contract ABIs and addresses
-const FEED_FORWARD_ADDRESS = "0x123..."; // Replace with actual contract address
-const FEED_COIN_ADDRESS = "0x456...";    // Replace with actual contract address
-const DONATION_NFT_ADDRESS = "0x789..."; // Replace with actual contract address
-const PRICE_ORACLE_ADDRESS = "0xabc..."; // Replace with actual contract address
+import { FEED_FORWARD_ABI } from './abi/FeedForwardABI';
+import { DONATION_NFT_ABI } from './abi/DonationNFTABI';
+import { PRICE_ORACLE_ABI } from './abi/PriceOracleABI';
+import { FEED_COIN_ABI } from './abi/FeedCoinABI';
 
-// Simplified ABIs - Replace with actual ABIs
-const FEED_FORWARD_ABI = [
-  {
-    "inputs": [
-      {"internalType": "address", "name": "_ngo", "type": "address"}
-    ],
-    "name": "donate",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "string", "name": "_name", "type": "string"}
-    ],
-    "name": "registerNGO",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "address", "name": "_ngo", "type": "address"}
-    ],
-    "name": "getNGO",
-    "outputs": [
-      {"internalType": "string", "name": "", "type": "string"},
-      {"internalType": "address", "name": "", "type": "address"},
-      {"internalType": "bool", "name": "", "type": "bool"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-];
-
-const FEED_COIN_ABI = [
-  {
-    "inputs": [
-      {"internalType": "address", "name": "account", "type": "address"}
-    ],
-    "name": "balanceOf",
-    "outputs": [
-      {"internalType": "uint256", "name": "", "type": "uint256"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "claimTokens",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-];
-
-const DONATION_NFT_ABI = [
-  {
-    "inputs": [
-      {"internalType": "address", "name": "owner", "type": "address"}
-    ],
-    "name": "balanceOf",
-    "outputs": [
-      {"internalType": "uint256", "name": "", "type": "uint256"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {"internalType": "uint256", "name": "tokenId", "type": "uint256"}
-    ],
-    "name": "tokenURI",
-    "outputs": [
-      {"internalType": "string", "name": "", "type": "string"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "claimNFT",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-];
-
-const PRICE_ORACLE_ABI = [
-  {
-    "inputs": [],
-    "name": "getLatestPrice",
-    "outputs": [
-      {"internalType": "int256", "name": "", "type": "int256"}
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-];
+// Smart contract ABIs and addresses - Update these with your actual deployed contract addresses
+const FEED_FORWARD_ADDRESS = "0xF26b489f44481069670d410639e1849708E8b7F5"; // FeedForward contract address
+const FEED_COIN_ADDRESS = "0x5B8453FD96ED80Db7894450b960d284d860b7350";    // FeedCoin contract address
+const DONATION_NFT_ADDRESS = "0xe469a1303f5954892FD9f03D2213237e84824667"; // DonationNFT contract address
+const PRICE_ORACLE_ADDRESS = "0xc313E32c765b2fec5D584039cC12DA824FC43354"; // PriceOracle contract address
 
 const Web3Context = createContext(undefined);
 
@@ -347,19 +253,24 @@ export function Web3Provider({ children }) {
     }
   };
 
-  // Prepare contract call utility function - updated for compatibility
+  // Prepare contract call utility function - using publicClient for direct blockchain interactions
   const readContract = async ({ address, abi, functionName, args = [] }) => {
-    // This is a mock implementation for demonstration purposes
-    console.log(`Reading contract ${address} function ${functionName} with args:`, args);
+    if (!publicClient || !address) {
+      console.error("Public client or contract address not available");
+      return null;
+    }
     
-    // Return mock data based on the function name
-    if (functionName === 'balanceOf') {
-      return BigInt(1000000000000000000); // Mock balance of 1 token
-    } else if (functionName === 'tokenURI') {
-      return `https://example.com/token/${args[0]}`; // Mock token URI
-    } else if (functionName === 'getNGO') {
-      return ["Mock NGO", args[0], true]; // Mock NGO data
-    } else {
+    try {
+      console.log(`Reading contract ${address} function ${functionName} with args:`, args);
+      const result = await publicClient.readContract({
+        address,
+        abi,
+        functionName,
+        args
+      });
+      return result;
+    } catch (error) {
+      console.error(`Error reading contract ${address}.${functionName}:`, error);
       return null;
     }
   };
@@ -374,18 +285,35 @@ export function Web3Provider({ children }) {
 
   const value = {
     isConnected,
-    address,
+    address, // Making wallet address available throughout the project
     ethBalance: ethBalanceData?.formatted || "0",
     feedCoinBalance: feedCoinBalanceData ? formatEther(feedCoinBalanceData.toString()) : "0",
     ngoData,
     ownedNFTs,
     ethPrice,
     isLoading,
+    // Contract addresses - making them available throughout the project
+    contracts: {
+      feedForward: FEED_FORWARD_ADDRESS,
+      feedCoin: FEED_COIN_ADDRESS,
+      donationNFT: DONATION_NFT_ADDRESS,
+      priceOracle: PRICE_ORACLE_ADDRESS
+    },
+    // Contract ABIs - making them available throughout the project
+    abis: {
+      feedForward: FEED_FORWARD_ABI,
+      feedCoin: FEED_COIN_ABI,
+      donationNFT: DONATION_NFT_ABI,
+      priceOracle: PRICE_ORACLE_ABI
+    },
+    // Methods
     registerNGO,
     getNGO,
     donate,
     claimNFT,
     claimTokens,
+    readContract,
+    fetchNFTs
   };
 
   return (

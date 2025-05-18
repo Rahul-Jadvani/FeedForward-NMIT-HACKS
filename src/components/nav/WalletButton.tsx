@@ -1,4 +1,11 @@
+// In any component that needs wallet address
+const { isConnected, address } = useWeb3();
 
+// Always check both values before using
+if (isConnected && address) {
+  // Use address safely here
+  console.log(`Connected wallet: ${address}`);
+}
 import { Wallet, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
