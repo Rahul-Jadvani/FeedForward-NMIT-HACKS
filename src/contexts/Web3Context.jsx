@@ -200,15 +200,91 @@ export function Web3Provider({ children }) {
       await writeContractAsync({
         address: DONATION_NFT_ADDRESS,
         abi: DONATION_NFT_ABI,
-        functionName: 'claimNFT',
+        functionName: 'mint',
+        args: [address],
         chainId: baseSepolia.id
       });
       
-      toast.success("NFT claim submitted!");
+      toast.success("NFT claimed successfully!");
       await fetchNFTs();
     } catch (error) {
       console.error("Error claiming NFT:", error);
       toast.error("Failed to claim NFT");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Function to mint a custom NFT with image support
+  const mintCustomNFT = async (metadata, imageFile) => {
+    if (!isConnected || !address) {
+      toast.error("Please connect your wallet first");
+      return null;
+    }
+
+    setIsLoading(true);
+    try {
+      // In a production environment, we would upload the image to IPFS
+      // For this demo, we'll create a data URL from the image file
+      let imageUrl = "/placeholder.svg"; // Default placeholder
+      
+      if (imageFile) {
+        try {
+          // Create a data URL from the image file
+          imageUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(imageFile);
+          });
+        } catch (imageError) {
+          console.error("Error processing image:", imageError);
+          // Continue with default image if there's an error
+        }
+      }
+      
+      const donationId = Math.floor(Math.random() * 1000000); // Mock donation ID
+      const timestamp = Math.floor(Date.now() / 1000); // Current timestamp in seconds
+      const sizeMultiplier = 1; // Default size multiplier
+      
+      // Use writeContractAsync for Wagmi v2
+      const tx = await writeContractAsync({
+        address: DONATION_NFT_ADDRESS,
+        abi: DONATION_NFT_ABI,
+        functionName: 'mintNFT',
+        args: [
+          donationId,
+          address, // recipient
+          address, // donor (self in this case)
+          metadata.description || "Custom NFT",
+          metadata.location || "Global",
+          timestamp,
+          sizeMultiplier
+        ],
+        chainId: baseSepolia.id
+      });
+      
+      // Create a new NFT object to add to the local state
+      // This allows immediate display without waiting for blockchain confirmation
+      const newNFT = {
+        id: `nft-${Date.now()}`,
+        name: metadata.name,
+        description: metadata.description,
+        earned: new Date().toISOString().split('T')[0],
+        image: imageUrl,
+        token: `NFT#${Math.floor(Math.random() * 100000)}`,
+        transactionHash: tx
+      };
+      
+      // Add the new NFT to the owned NFTs array
+      setOwnedNFTs(prevNFTs => [newNFT, ...prevNFTs]);
+      
+      toast.success("NFT minted successfully!");
+      return { tx, nft: newNFT };
+    } catch (error) {
+      console.error("Error minting NFT:", error);
+      toast.error("Failed to mint NFT: " + (error.message || "Unknown error"));
+      return null;
     } finally {
       setIsLoading(false);
     }
@@ -517,6 +593,7 @@ export function Web3Provider({ children }) {
     getNGO,
     donate,
     claimNFT,
+    mintCustomNFT,
     claimTokens,
     requestTokensFromOwner,
     sendTokens,
