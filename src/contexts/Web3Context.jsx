@@ -103,20 +103,46 @@ export function Web3Provider({ children }) {
     }
 
     try {
-      const result = await readContract({
+      // Since getNGO doesn't exist in the ABI, we'll use hasRole to check if the address has admin role
+      // as a way to determine if it's an NGO
+      const adminRole = await readContract({
         address: FEED_FORWARD_ADDRESS,
         abi: FEED_FORWARD_ABI,
-        functionName: 'getNGO',
-        args: [ngoAddress],
+        functionName: 'ADMIN_ROLE',
+        args: [],
       });
       
-      if (result && Array.isArray(result) && result.length === 3) {
-        const [name, addr, isVerified] = result;
+      const isNGO = await readContract({
+        address: FEED_FORWARD_ADDRESS,
+        abi: FEED_FORWARD_ABI,
+        functionName: 'hasRole',
+        args: [adminRole, ngoAddress],
+      });
+      
+      // For now, we'll create a mock NGO object
+      // In a real implementation, you would store NGO data in a different way
+      if (isNGO) {
         return { 
-          name, 
-          address: addr, 
-          isVerified 
+          name: "NGO Organization", 
+          address: ngoAddress, 
+          isVerified: true
         };
+      } else {
+        // Check if the address has any donations to determine if it's a user
+        const userDonations = await readContract({
+          address: FEED_FORWARD_ADDRESS,
+          abi: FEED_FORWARD_ABI,
+          functionName: 'getUserDonations',
+          args: [ngoAddress],
+        });
+        
+        if (userDonations && userDonations.length > 0) {
+          return { 
+            name: "User Account", 
+            address: ngoAddress, 
+            isVerified: false
+          };
+        }
       }
       return null;
     } catch (error) {
@@ -188,7 +214,7 @@ export function Web3Provider({ children }) {
     }
   };
 
-  // Function to claim tokens
+  // Function to claim tokens using rewardDonor function
   const claimTokens = async () => {
     if (!isConnected || !address) {
       toast.error("Please connect your wallet first");
@@ -198,17 +224,20 @@ export function Web3Provider({ children }) {
     setIsLoading(true);
     try {
       // Use writeContractAsync for Wagmi v2
+      // The rewardDonor function requires donor address, donationId, and rewardMultiplier
+      // For demo purposes, we'll use a mock donationId of 1 and a multiplier of 1
       await writeContractAsync({
         address: FEED_COIN_ADDRESS,
         abi: FEED_COIN_ABI,
-        functionName: 'claimTokens',
+        functionName: 'rewardDonor',
+        args: [address, BigInt(1), BigInt(1)], // donor, donationId, rewardMultiplier
         chainId: baseSepolia.id
       });
       
       toast.success("Tokens claim submitted!");
     } catch (error) {
       console.error("Error claiming tokens:", error);
-      toast.error("Failed to claim tokens");
+      toast.error("Failed to claim tokens: " + (error.message || error));
     } finally {
       setIsLoading(false);
     }

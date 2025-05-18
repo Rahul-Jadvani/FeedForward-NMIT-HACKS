@@ -98,6 +98,12 @@ const InteractiveMap = ({ foodFlags, onFoodFlagClick }: InteractiveMapProps) => 
 
       // Add food flags as markers
       foodFlags.forEach((flag) => {
+        // Skip if latitude or longitude is missing
+        if (flag.latitude === undefined || flag.longitude === undefined) {
+          console.warn("Skipping food flag with missing coordinates:", flag);
+          return;
+        }
+        
         const marker = L.marker([flag.latitude, flag.longitude], {
           icon: L.icon({
             iconUrl: "/icons/food-flag.svg",

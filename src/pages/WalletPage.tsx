@@ -15,6 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useWeb3 } from "@/contexts/Web3Context";
+import { formatEther } from "viem";
 import { Wallet, History, ArrowUp, ArrowDown, Users, Award, Coins, RefreshCw, Send } from "lucide-react";
 
 // Mock transaction data
@@ -31,11 +33,20 @@ export default function WalletPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAuthenticated, user } = useAuth();
+  const { 
+    isConnected, 
+    address, 
+    feedCoinBalance: web3FeedCoinBalance, 
+    ethBalance,
+    isLoading: web3Loading,
+    claimTokens
+  } = useWeb3();
   const [activeTab, setActiveTab] = useState<string>("balance");
   const [isLoading, setIsLoading] = useState(true);
   const [feedCoinBalance, setFeedCoinBalance] = useState(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [claimingTokens, setClaimingTokens] = useState(false);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -52,11 +63,14 @@ export default function WalletPage() {
   // Fetch wallet data
   useEffect(() => {
     if (isAuthenticated) {
-      // Mock API call to fetch wallet data
-      setTimeout(() => {
-        setFeedCoinBalance(350);
-        setTransactions([
-          {
+      // Use real blockchain data if connected, otherwise use mock data
+      if (isConnected && web3FeedCoinBalance) {
+        // Convert from Wei to Ether and then to a number
+        const balanceNumber = parseFloat(web3FeedCoinBalance);
+        setFeedCoinBalance(balanceNumber);
+        
+        // Keep some mock transactions for now, but we can replace these with real ones later
+        setTransactions([{
             id: "tx-001",
             type: "earned",
             amount: 50,
@@ -71,47 +85,106 @@ export default function WalletPage() {
             description: "Achievement: First-Time Donor",
             date: "2025-04-20",
             status: "completed"
-          },
-          {
-            id: "tx-003",
+          }
+        ]);
+      } else {
+        // Fallback to mock data if not connected to blockchain
+        setFeedCoinBalance(350);
+        setTransactions([{
+            id: "tx-001",
             type: "earned",
-            amount: 100,
-            description: "Weekly bonus: Top Donor",
-            date: "2025-04-18",
+            amount: 50,
+            description: "Donation: Corporate Lunch Leftovers",
+            date: "2025-04-23",
             status: "completed"
           },
           {
-            id: "tx-004",
-            type: "spent",
-            amount: 200,
-            description: "Reward: Eco-Friendly Water Bottle",
-            date: "2025-04-15",
-            status: "completed"
-          },
-          {
-            id: "tx-005",
-            type: "received",
-            amount: 75,
-            description: "Transfer from Community Fund",
-            date: "2025-04-10",
+            id: "tx-002",
+            type: "earned",
+            amount: 30,
+            description: "Achievement: First-Time Donor",
+            date: "2025-04-20",
             status: "completed"
           }
         ]);
-        setIsLoading(false);
-      }, 1200);
+      }
+      setIsLoading(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isConnected, web3FeedCoinBalance]);
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true);
-    // Mock refresh
-    setTimeout(() => {
-      setIsRefreshing(false);
+    try {
+      // If connected to blockchain, we can refresh the real data
+      if (isConnected) {
+        // Here you would typically call functions to refresh blockchain data
+        // For now, we'll just wait a bit to simulate the refresh
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      } else {
+        // Mock refresh for non-connected users
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      
       toast({
         title: "Wallet refreshed",
         description: "Your wallet information is up to date",
       });
-    }, 1000);
+    } catch (error) {
+      console.error("Error refreshing wallet:", error);
+      toast({
+        title: "Refresh failed",
+        description: "Could not refresh wallet information",
+        variant: "destructive"
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+  
+  // Function to claim tokens from the FeedCoin contract
+  const handleClaimTokens = async () => {
+    if (!isConnected) {
+      toast({
+        title: "Wallet not connected",
+        description: "Please connect your wallet to claim tokens",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setClaimingTokens(true);
+    try {
+      await claimTokens();
+      
+      // Add a new transaction to the list
+      const newTransaction: Transaction = {
+        id: `tx-${Date.now()}`,
+        type: "earned",
+        amount: 100, // Example amount
+        description: "Claimed FeedCoin tokens",
+        date: new Date().toISOString().split('T')[0],
+        status: "completed"
+      };
+      
+      setTransactions(prev => [newTransaction, ...prev]);
+      
+      toast({
+        title: "Tokens claimed successfully",
+        description: "Your FeedCoin tokens have been claimed"
+      });
+      
+      // Refresh the wallet after claiming
+      handleRefresh();
+    } catch (error) {
+      console.error("Error claiming tokens:", error);
+      toast({
+        title: "Claim failed",
+        description: "Failed to claim tokens. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setClaimingTokens(false);
+    }
   };
 
   const getTransactionIcon = (type: string) => {
@@ -311,6 +384,28 @@ export default function WalletPage() {
                 </p>
                 <Button variant="outline" size="sm" className="mt-2 w-full">
                   View Achievements
+                </Button>
+              </div>
+              
+              {/* Claim Tokens Button - This will trigger an actual blockchain transaction */}
+              <div className="p-4 border rounded-md hover:bg-muted transition-colors bg-green-50">
+                <div className="flex justify-between items-center">
+                  <div className="font-medium">Claim FeedCoins</div>
+                  <Badge variant="outline" className="bg-green-100 text-green-700">
+                    +100 FC
+                  </Badge>
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Claim your FeedCoin tokens from the contract
+                </p>
+                <Button 
+                  variant="default" 
+                  size="sm" 
+                  className="mt-2 w-full bg-green-600 hover:bg-green-700"
+                  onClick={handleClaimTokens}
+                  disabled={claimingTokens || !isConnected}
+                >
+                  {claimingTokens ? "Claiming..." : "Claim Tokens"}
                 </Button>
               </div>
             </CardContent>

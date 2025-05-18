@@ -33,44 +33,89 @@ export const ProfileProvider = ({ children }) => {
         return;
       }
 
-      const { data, error: fetchError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .maybeSingle();
+      try {
+        // Check if profiles table exists
+        const { data, error: fetchError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
 
-      if (fetchError) {
-        throw fetchError;
-      }
-
-      if (data) {
-        // Parse preferences to ensure it's an object
-        let parsedPreferences = data.preferences || {};
-        
-        // If preferences is a string, try to parse it as JSON
-        if (typeof data.preferences === 'string') {
-          try {
-            parsedPreferences = JSON.parse(data.preferences);
-          } catch (e) {
-            console.error('Failed to parse preferences string:', e);
-            parsedPreferences = {}; // Fallback to empty object
+        if (fetchError) {
+          // If the error is about the table not existing, create a default profile
+          if (fetchError.code === '42P01') { // PostgreSQL code for 'relation does not exist'
+            console.log('Profiles table does not exist, using default profile');
+            // Create a default profile object
+            setProfile({
+              id: user.id,
+              username: user.email?.split('@')[0] || 'user',
+              full_name: user.user_metadata?.full_name || '',
+              avatar_url: user.user_metadata?.avatar_url || null,
+              preferences: {},
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+            return;
+          } else {
+            throw fetchError;
           }
         }
-        
-        // If it's not an object after parsing, use empty object
-        if (typeof parsedPreferences !== 'object' || parsedPreferences === null || Array.isArray(parsedPreferences)) {
-          parsedPreferences = {};
-        }
 
+        if (data) {
+          // Parse preferences to ensure it's an object
+          let parsedPreferences = data.preferences || {};
+          
+          // If preferences is a string, try to parse it as JSON
+          if (typeof data.preferences === 'string') {
+            try {
+              parsedPreferences = JSON.parse(data.preferences);
+            } catch (e) {
+              console.error('Failed to parse preferences string:', e);
+              parsedPreferences = {}; // Fallback to empty object
+            }
+          }
+          
+          // If it's not an object after parsing, use empty object
+          if (typeof parsedPreferences !== 'object' || parsedPreferences === null || Array.isArray(parsedPreferences)) {
+            parsedPreferences = {};
+          }
+
+          setProfile({
+            ...data,
+            preferences: parsedPreferences
+          });
+        } else {
+          // No profile found, create a default one
+          setProfile({
+            id: user.id,
+            username: user.email?.split('@')[0] || 'user',
+            full_name: user.user_metadata?.full_name || '',
+            avatar_url: user.user_metadata?.avatar_url || null,
+            preferences: {},
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+        }
+      } catch (err) {
+        console.error('Error in Supabase query:', err);
+        // Fallback to default profile on any error
         setProfile({
-          ...data,
-          preferences: parsedPreferences
+          id: user.id,
+          username: user.email?.split('@')[0] || 'user',
+          full_name: user.user_metadata?.full_name || '',
+          avatar_url: user.user_metadata?.avatar_url || null,
+          preferences: {},
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         });
       }
     } catch (err) {
       console.error('Error fetching profile:', err);
       setError(err);
-      toast.error("Failed to load profile");
+      // Don't show toast for missing table error
+      if (!(err.code === '42P01')) {
+        toast.error("Failed to load profile");
+      }
     } finally {
       setLoading(false);
     }

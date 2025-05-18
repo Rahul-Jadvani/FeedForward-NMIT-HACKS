@@ -365,6 +365,28 @@ export default function FoodMap() {
       <Tabs value={view} onValueChange={(v) => setView(v as "map" | "list")}>
         <TabsContent value="map" className="mt-0 animate-fade-in">
           <div className="relative rounded-lg overflow-hidden border h-[500px] mb-6">
+            <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                className="bg-muted backdrop-blur-sm hover:bg-blue-600 shadow-md"
+                onClick={refreshFoodFlags}
+              >
+                <MapPin className="h-4 w-4 mr-2 text-ff-blue" /> Find Nearby
+              </Button>
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                className="bg-muted backdrop-blur-sm hover:bg-blue-600 shadow-md"
+                onClick={() => navigate('/donate')}
+              >
+                <Calendar className="h-4 w-4 mr-2 text-ff-green" /> Add Food Flag
+              </Button>
+            </div>
+            <div className="absolute bottom-4 left-4 z-10 bg-muted backdrop-blur-sm hover:bg-blue-600 backdrop-blur-sm p-2 rounded-md shadow-md">
+              <p className="text-xs font-medium">Food Flags: {sortedFlags.length}</p>
+              <p className="text-xs text-muted-foreground">Click on a flag for details</p>
+            </div>
             <InteractiveMap 
               foodFlags={sortedFlags}
               onFoodFlagClick={(id) => navigate(`/food/${id}`)}

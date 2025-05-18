@@ -54,6 +54,7 @@ import { cn } from "@/lib/utils";
 import LocationPicker from "@/components/LocationPicker";
 import { StakingForm } from "@/components/StakingForm";
 import { useAuth } from "@/contexts/AuthContext";
+import InteractiveMap from "@/components/InteractiveMap";
 
 // Create a schema for food donation
 const donationFormSchema = z.object({
@@ -108,6 +109,32 @@ export default function DonatePage() {
   const [images, setImages] = useState<File[]>([]);
   const [hasStaked, setHasStaked] = useState(false);
   const [stakedAmount, setStakedAmount] = useState(0);
+  const [foodFlags, setFoodFlags] = useState<any[]>([
+    {
+      id: "flag1",
+      latitude: 19.0760,
+      longitude: 72.8777,
+      title: "Restaurant Surplus",
+      description: "Fresh cooked meals available for pickup",
+      quantity: "25 meals"
+    },
+    {
+      id: "flag2",
+      latitude: 19.0830,
+      longitude: 72.8900,
+      title: "Bakery Donations",
+      description: "Day-old bread and pastries",
+      quantity: "15 kg"
+    },
+    {
+      id: "flag3",
+      latitude: 19.0650,
+      longitude: 72.8650,
+      title: "Grocery Surplus",
+      description: "Fresh vegetables and fruits",
+      quantity: "30 kg"
+    }
+  ]);
   const { isAuthenticated } = useAuth();
   
   // Initialize the form with default values
@@ -636,6 +663,21 @@ export default function DonatePage() {
                         </FormItem>
                       )}
                     />
+                    
+                    {/* Interactive Map Section */}
+                    <div className="mt-6">
+                      <h3 className="text-lg font-medium mb-2">Food Donation Map</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        View nearby food donation locations and routes
+                      </p>
+                      <InteractiveMap 
+                        foodFlags={foodFlags} 
+                        onFoodFlagClick={(id) => {
+                          console.log("Food flag clicked:", id);
+                          // Add any additional handling here
+                        }}
+                      />
+                    </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
@@ -912,14 +954,14 @@ export default function DonatePage() {
                     control={form.control}
                     name="claimRewards"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 bg-amber-50">
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 bg-muted">
                         <FormControl>
                           <Checkbox
                             checked={field.value}
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>
-                        <div className="space-y-1 leading-none">
+                        <div className="space-y-1 leading-none ">
                           <FormLabel>
                             Claim FeedCoin Rewards
                           </FormLabel>
