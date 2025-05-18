@@ -18,6 +18,17 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { formatEther } from "viem";
 import { Wallet, History, ArrowUp, ArrowDown, Users, Award, Coins, RefreshCw, Send } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 // Mock transaction data
 interface Transaction {
@@ -39,7 +50,8 @@ export default function WalletPage() {
     feedCoinBalance: web3FeedCoinBalance, 
     ethBalance,
     isLoading: web3Loading,
-    requestTokensFromOwner
+    requestTokensFromOwner,
+    sendTokens
   } = useWeb3();
   const [activeTab, setActiveTab] = useState<string>("balance");
   const [isLoading, setIsLoading] = useState(true);
@@ -47,6 +59,12 @@ export default function WalletPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [claimingTokens, setClaimingTokens] = useState(false);
+  
+  // Send tokens state
+  const [sendDialogOpen, setSendDialogOpen] = useState(false);
+  const [recipientAddress, setRecipientAddress] = useState("");
+  const [sendAmount, setSendAmount] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -215,13 +233,90 @@ export default function WalletPage() {
     return null; // Will redirect in the useEffect
   }
 
+  // Handle sending tokens
+  const handleSendTokens = async () => {
+    if (!isConnected) {
+      toast({
+        title: "Wallet not connected",
+        description: "Please connect your wallet to send tokens",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (!recipientAddress) {
+      toast({
+        title: "Missing recipient",
+        description: "Please enter a recipient address",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    const amount = parseFloat(sendAmount);
+    if (isNaN(amount) || amount <= 0) {
+      toast({
+        title: "Invalid amount",
+        description: "Please enter a valid amount greater than 0",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (amount > feedCoinBalance) {
+      toast({
+        title: "Insufficient balance",
+        description: "You don't have enough FeedCoins",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsSending(true);
+    try {
+      const success = await sendTokens(recipientAddress, amount);
+      
+      if (success) {
+        // Add a new transaction to the list
+        const newTransaction: Transaction = {
+          id: `tx-${Date.now()}`,
+          type: "spent",
+          amount: amount,
+          description: `Sent to ${recipientAddress.substring(0, 6)}...${recipientAddress.substring(recipientAddress.length - 4)}`,
+          date: new Date().toISOString().split('T')[0],
+          status: "completed"
+        };
+        
+        setTransactions(prev => [newTransaction, ...prev]);
+        
+        // Close the dialog and reset form
+        setSendDialogOpen(false);
+        setRecipientAddress("");
+        setSendAmount("");
+        
+        // Refresh the wallet
+        handleRefresh();
+      }
+    } catch (error) {
+      console.error("Error sending tokens:", error);
+      toast({
+        title: "Send failed",
+        description: "Failed to send tokens. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">FeedCoin Wallet</h1>
-          <p className="text-muted-foreground">Manage your impact rewards</p>
-        </div>
+    <>
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+          <div>
+            <h1 className="text-3xl font-bold">FeedCoin Wallet</h1>
+            <p className="text-muted-foreground">Manage your impact rewards</p>
+          </div>
         
         <div className="flex gap-2 mt-4 md:mt-0">
           <Button 
@@ -275,7 +370,11 @@ export default function WalletPage() {
                       <Award className="mr-2 h-4 w-4" />
                       Redeem Rewards
                     </Button>
-                    <Button variant="outline">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setSendDialogOpen(true)}
+                      disabled={!isConnected || feedCoinBalance <= 0}
+                    >
                       <Send className="mr-2 h-4 w-4" />
                       Send FeedCoins
                     </Button>
@@ -437,8 +536,65 @@ export default function WalletPage() {
               </div>
             </CardContent>
           </Card>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Send FeedCoins Dialog */}
+      <Dialog open={sendDialogOpen} onOpenChange={setSendDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Send FeedCoins</DialogTitle>
+            <DialogDescription>
+              Transfer FeedCoins to another wallet address.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="recipient" className="text-right">
+                Recipient
+              </Label>
+              <Input
+                id="recipient"
+                placeholder="0x..."
+                className="col-span-3"
+                value={recipientAddress}
+                onChange={(e) => setRecipientAddress(e.target.value)}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="amount" className="text-right">
+                Amount
+              </Label>
+              <div className="col-span-3 flex items-center gap-2">
+                <Input
+                  id="amount"
+                  type="number"
+                  placeholder="0.0"
+                  value={sendAmount}
+                  onChange={(e) => setSendAmount(e.target.value)}
+                />
+                <span className="text-sm text-muted-foreground">FC</span>
+              </div>
+            </div>
+            <div className="col-span-4 text-sm text-muted-foreground">
+              <div className="flex justify-between mt-2">
+                <span>Available balance:</span>
+                <span>{feedCoinBalance} FC</span>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSendDialogOpen(false)}>Cancel</Button>
+            <Button 
+              onClick={handleSendTokens} 
+              disabled={isSending || !isConnected || !recipientAddress || !sendAmount}
+            >
+              {isSending ? "Sending..." : "Send"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

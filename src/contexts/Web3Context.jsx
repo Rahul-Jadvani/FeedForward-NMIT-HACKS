@@ -280,6 +280,48 @@ export function Web3Provider({ children }) {
     }
   };
 
+  // Function to send FeedCoins to another address
+  const sendTokens = async (recipientAddress, amount) => {
+    if (!isConnected || !address) {
+      toast.error("Please connect your wallet first");
+      return false;
+    }
+
+    if (!recipientAddress) {
+      toast.error("Please provide a recipient address");
+      return false;
+    }
+
+    if (!amount || amount <= 0) {
+      toast.error("Please provide a valid amount");
+      return false;
+    }
+
+    // Convert amount to wei (with 18 decimals)
+    const tokenAmount = BigInt(Math.floor(amount * 10**18));
+    
+    setIsLoading(true);
+    try {
+      // Use the standard ERC-20 transfer function
+      await writeContractAsync({
+        address: FEED_COIN_ADDRESS,
+        abi: FEED_COIN_ABI,
+        functionName: 'transfer',
+        args: [recipientAddress, tokenAmount],
+        chainId: baseSepolia.id
+      });
+      
+      toast.success(`Successfully sent ${amount} FeedCoins to ${recipientAddress.substring(0, 6)}...${recipientAddress.substring(recipientAddress.length - 4)}`);
+      return true;
+    } catch (error) {
+      console.error("Error sending tokens:", error);
+      toast.error("Failed to send tokens: " + (error.message || error));
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Function to fetch owned NFTs
   const fetchNFTs = async () => {
     if (!address) return;
@@ -379,6 +421,7 @@ export function Web3Provider({ children }) {
     claimNFT,
     claimTokens,
     requestTokensFromOwner,
+    sendTokens,
     readContract,
     fetchNFTs
   };
